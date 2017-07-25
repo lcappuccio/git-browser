@@ -12,6 +12,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 
+		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
@@ -38,6 +39,9 @@ public class Main {
 					System.out.println("----");
 				}
 			}
+			++commits;
 		}
+
+		System.out.println("\nCommits " + commits);
 	}
 }
