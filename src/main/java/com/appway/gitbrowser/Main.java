@@ -15,11 +15,15 @@ public class Main {
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
-		
+
 		for(String key: repository.getTags().keySet()) {
 
 			System.out.println(repository.getTags().get(key).getName());
 
 		}
+
+		File workTree = repository.getWorkTree();
+
+		System.out.println(workTree.getAbsolutePath());
 	}
 }
