@@ -43,5 +43,7 @@ public class Main {
 		}
 
 		System.out.println("\nCommits " + commits);
+
+		repository.close();
 	}
 }
