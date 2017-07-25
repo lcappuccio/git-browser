@@ -1,5 +1,6 @@
 package com.appway.gitbrowser;
 
+import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -27,7 +28,7 @@ public class Main {
 		System.out.println(workTree.getAbsolutePath());
 
 		RevWalk walk = new RevWalk(repository);
-		walk.markStart(walk.parseCommit(repository.resolve("HEAD")));
+		walk.markStart(walk.parseCommit(repository.resolve(Constants.HEAD)));
 		for (RevCommit revCommit : walk) {
 			System.out.println("ID " + revCommit.getId());
 			System.out.println("Author " + revCommit.getAuthorIdent().getName());
