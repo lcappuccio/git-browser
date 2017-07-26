@@ -22,10 +22,10 @@ public class Main {
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
-		
+
 		Git gitRepository = new Git(repository);
 		Iterable<RevCommit> revCommits = gitRepository.log().all().call();
-		for (RevCommit revCommit: revCommits) {
+		for (RevCommit revCommit : revCommits) {
 			System.out.println("ID " + revCommit.getId());
 			System.out.println("Date " + getCommitDate(revCommit.getCommitTime()));
 			System.out.println("Author " + revCommit.getAuthorIdent().getName());
