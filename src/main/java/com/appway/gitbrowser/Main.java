@@ -8,10 +8,13 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException, GitAPIException {
+	public static void main(String[] args) throws IOException, GitAPIException, ParseException {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -24,6 +27,7 @@ public class Main {
 		Iterable<RevCommit> revCommits = gitRepository.log().all().call();
 		for (RevCommit revCommit: revCommits) {
 			System.out.println("ID " + revCommit.getId());
+			System.out.println("Date " + getCommitDate(revCommit.getCommitTime()));
 			System.out.println("Author " + revCommit.getAuthorIdent().getName());
 			System.out.println("Message " + revCommit.getFullMessage().trim());
 			if (revCommit.getParents().length > 0) {
@@ -62,5 +66,11 @@ public class Main {
 		System.out.println("\nCommits " + commits);
 
 		repository.close();
+	}
+
+	private static String getCommitDate(int commitTime) throws ParseException {
+
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return simpleDateFormat.format(new Date(commitTime * 1000L));
 	}
 }
