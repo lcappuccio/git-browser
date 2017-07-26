@@ -1,7 +1,9 @@
 package com.appway.gitbrowser;
 
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -11,6 +13,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class Main {
 
@@ -18,6 +21,7 @@ public class Main {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
+		// 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/.git"))
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
@@ -40,8 +44,24 @@ public class Main {
 			++commits;
 		}
 
-		for (String key : repository.getTags().keySet()) {
-			System.out.println(repository.getTags().get(key).getName());
+		List<Ref> tagReferenceList = gitRepository.tagList().call();
+		for (Ref tagReference : tagReferenceList) {
+			System.out.println("Tag " + tagReference.getName());
+			System.out.println("Tag commit id " + tagReference.getObjectId());
+
+			// fetch all commits for this tag
+			LogCommand tagsGitLog = gitRepository.log();
+			Ref peelReference = repository.peel(tagReference);
+			if (peelReference.getPeeledObjectId() != null) {
+				tagsGitLog.add(peelReference.getPeeledObjectId());
+			} else {
+				tagsGitLog.add(tagReference.getObjectId());
+			}
+			// and finally...
+			Iterable<RevCommit> logs = tagsGitLog.call();
+			for (RevCommit rev : logs) {
+				System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id: " + rev.getId().getName() */);
+			}
 		}
 
 		File workTree = repository.getWorkTree();
