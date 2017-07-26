@@ -47,22 +47,6 @@ public class Main {
 		File workTree = repository.getWorkTree();
 		System.out.println(workTree.getAbsolutePath());
 
-		// RevWalk walk = new RevWalk(repository);
-		// walk.markStart(walk.parseCommit(repository.resolve(Constants.HEAD)));
-		// for (RevCommit revCommit : walk) {
-		// 	System.out.println("ID " + revCommit.getId());
-		// 	System.out.println("Author " + revCommit.getAuthorIdent().getName());
-		// 	System.out.println("Message " + revCommit.getFullMessage().trim());
-		// 	if (revCommit.getParents().length > 0) {
-		// 		RevCommit parent = revCommit.getParent(0);
-		// 		if (parent != null) {
-		// 			System.out.println("Parent " + parent.getId());
-		// 			System.out.println("----");
-		// 		}
-		// 	}
-		// 	++commits;
-		// }
-
 		System.out.println("\nCommits " + commits);
 
 		repository.close();
