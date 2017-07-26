@@ -45,22 +45,6 @@ public class TestRepoCreator {
 		createNewRepositoryFolder();
 		repository = initializeRepository();
 
-		// add a file
-		FileUtils.write(SOME_TEST_FILE, "First line", Charset.defaultCharset());
-		git.add().addFilepattern(SOME_TEST_FILE.getAbsolutePath()).call();
-		logger.info("Added file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
-		// and then commit the changes
-		git.commit().setMessage("Added testfile").call();
-		logger.info("Committed file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
-
-		// assert there is a single commit
-		Iterable<RevCommit> revCommits = git.log().call();
-		int commits = 0;
-		for (RevCommit revCommit : revCommits) {
-			++commits;
-		}
-		assertEquals(1, commits);
-
 	}
 
 	@After
@@ -73,6 +57,19 @@ public class TestRepoCreator {
 	@Test
 	public void should_have_a_repository() {
 		assertNotNull(repository);
+	}
+
+	@Test
+	public void should_make_a_commit() throws IOException, GitAPIException {
+
+		FileUtils.write(SOME_TEST_FILE, "First line", Charset.defaultCharset());
+		git.add().addFilepattern(SOME_TEST_FILE.getAbsolutePath()).call();
+		logger.info("Added file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
+
+		git.commit().setMessage("Added testfile").call();
+		logger.info("Committed file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
+
+		assertEquals(1, getCommitCount());
 	}
 
 	private void clearPreviousRun() throws IOException {
@@ -95,6 +92,16 @@ public class TestRepoCreator {
 			logger.error(message);
 			throw new IOException(message);
 		}
+	}
+
+	private int getCommitCount() throws GitAPIException {
+
+		int commits = 0;
+		Iterable<RevCommit> revCommits = git.log().call();
+		for (RevCommit revCommit : revCommits) {
+			++commits;
+		}
+		return commits;
 	}
 
 	private Repository initializeRepository() throws GitAPIException {
