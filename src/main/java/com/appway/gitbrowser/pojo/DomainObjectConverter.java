@@ -1,7 +1,6 @@
 package com.appway.gitbrowser.pojo;
 
 import com.appway.gitbrowser.model.Commit;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -17,10 +16,9 @@ public class DomainObjectConverter {
 		return new Commit(revCommit.getId().toString(), revCommit.getCommitTime(), name, revCommit.getFullMessage());
 	}
 
-	public static RevCommit convertFrom(Commit commit, Git git) throws GitAPIException {
+	public static RevCommit convertFrom(Commit commit, GitLogContainer gitLogContainer) throws GitAPIException {
 
-		Iterable<RevCommit> refCollection = git.log().call();
-		for (RevCommit revCommit: refCollection) {
+		for (RevCommit revCommit: gitLogContainer.getRevCommitList()) {
 			String name = revCommit.getId().getName();
 			if (commit.getId().contains(name)) {
 				return revCommit;

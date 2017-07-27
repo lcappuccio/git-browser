@@ -2,6 +2,7 @@ package com.appway.gitbrowser;
 
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.pojo.DomainObjectConverter;
+import com.appway.gitbrowser.pojo.GitLogContainer;
 import com.appway.gitbrowser.services.GitApi;
 import com.appway.gitbrowser.services.GitApiImpl;
 import org.eclipse.jgit.api.Git;
@@ -25,14 +26,17 @@ public class Main {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
+		// Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/
+		// .git"))
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
 
-		GitApi gitApi = new GitApiImpl(repository);
-
 		Git gitRepository = new Git(repository);
+		GitLogContainer gitLogContainer = new GitLogContainer(gitRepository);
+		GitApi gitApi = new GitApiImpl(repository, gitLogContainer);
+
 		List<Commit> revCommits = gitApi.getAllCommits();
 		for (Commit commit : revCommits) {
 			System.out.println("ID " + commit.getId());

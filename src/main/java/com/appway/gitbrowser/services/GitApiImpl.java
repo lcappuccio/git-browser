@@ -2,6 +2,7 @@ package com.appway.gitbrowser.services;
 
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.pojo.DomainObjectConverter;
+import com.appway.gitbrowser.pojo.GitLogContainer;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -14,12 +15,14 @@ import java.util.*;
 public class GitApiImpl implements GitApi {
 
 	private final Git git;
+	private final GitLogContainer gitLogContainer;
 	private final Repository repository;
 
 	@Autowired
-	public GitApiImpl(Repository repository) {
+	public GitApiImpl(Repository repository, GitLogContainer gitLogContainer) {
 		this.repository = repository;
 		git = new Git(repository);
+		this.gitLogContainer = gitLogContainer;
 	}
 
 	public Repository getRepository() {
@@ -29,7 +32,7 @@ public class GitApiImpl implements GitApi {
 	@Override
 	public Commit getParentOf(Commit commit) throws GitAPIException {
 
-		RevCommit revCommit = DomainObjectConverter.convertFrom(commit, git);
+		RevCommit revCommit = DomainObjectConverter.convertFrom(commit, gitLogContainer);
 
 		if (revCommit != null && revCommit.getParents().length > 0) {
 			RevCommit parent = revCommit.getParent(0);

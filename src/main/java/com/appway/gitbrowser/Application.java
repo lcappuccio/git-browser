@@ -1,5 +1,6 @@
 package com.appway.gitbrowser;
 
+import com.appway.gitbrowser.pojo.GitLogContainer;
 import com.appway.gitbrowser.services.GitApi;
 import com.appway.gitbrowser.services.GitApiImpl;
 import com.appway.gitbrowser.services.GraphApi;
@@ -29,13 +30,23 @@ public class Application {
 	}
 
 	@Bean
+	public GitLogContainer gitLogContainer() throws GitAPIException {
+		return new GitLogContainer(getGitRepository());
+	}
+
+	@Bean
 	public GitApi gitApi() throws GitAPIException {
-		gitRepository = Git.init().setDirectory(new File(repositoryFolder)).call();
-		return new GitApiImpl(gitRepository.getRepository());
+
+		return new GitApiImpl(getGitRepository().getRepository(), gitLogContainer());
 	}
 
 	@Bean
 	public GraphApi graphApi() {
 		return new GraphApiImpl(databaseFolder);
+	}
+
+	@Bean
+	public Git getGitRepository() throws GitAPIException {
+		return Git.init().setDirectory(new File(repositoryFolder)).call();
 	}
 }
