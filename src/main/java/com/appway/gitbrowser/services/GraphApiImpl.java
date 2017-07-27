@@ -1,6 +1,6 @@
 package com.appway.gitbrowser.services;
 
-import com.appway.gitbrowser.model.Commit;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -35,22 +35,22 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
-	public List<Commit> findAll() {
+	public List<RevCommit> findAll() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public Commit findById(String commitId) {
+	public RevCommit findById(String commitId) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<Commit> findCommitsByMessage(String commitMessage) {
+	public List<RevCommit> findCommitsByMessage(String commitMessage) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<Commit> findCommitsThatContainMessage(String textToSearch) {
+	public List<RevCommit> findCommitsThatContainMessage(String textToSearch) {
 		throw new NotImplementedException();
 	}
 
