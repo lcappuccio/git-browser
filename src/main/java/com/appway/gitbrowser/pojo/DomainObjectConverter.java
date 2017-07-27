@@ -13,18 +13,12 @@ public class DomainObjectConverter {
 	public static Commit convertFrom(RevCommit revCommit) {
 
 		String name = revCommit.getAuthorIdent().getName();
-		return new Commit(revCommit.getId().toString(), revCommit.getCommitTime(), name, revCommit.getFullMessage());
+		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime(), name, revCommit.getFullMessage());
 	}
 
 	public static RevCommit convertFrom(Commit commit, GitLogContainer gitLogContainer) throws GitAPIException {
 
-		for (RevCommit revCommit: gitLogContainer.getRevCommitList()) {
-			String name = revCommit.getId().getName();
-			if (commit.getId().contains(name)) {
-				return revCommit;
-			}
-		}
-		return  null;
+		return gitLogContainer.getRevCommit(commit.getId());
 	}
 
 	/**

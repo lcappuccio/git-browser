@@ -7,27 +7,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class GitLogContainer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLogContainer.class);
-	private final List<RevCommit> revCommitList;
+	private final HashMap<String, RevCommit> revCommitList;
 
 	@Autowired
 	public GitLogContainer(Git gitRepository) throws GitAPIException {
 
-		revCommitList = new ArrayList<>();
+		revCommitList = new HashMap<>();
 		Iterable<RevCommit> refCollection = gitRepository.log().call();
 		for (RevCommit revCommit: refCollection) {
-			revCommitList.add(revCommit);
+			revCommitList.put(revCommit.getId().getName(), revCommit);
 			LOGGER.info("Added " + revCommit.getId().getName());
 		}
 		LOGGER.info("Added " + revCommitList.size() + " commits");
 	}
 
-	public List<RevCommit> getRevCommitList() {
-		return revCommitList;
+	public RevCommit getRevCommit(final String commitId) {
+		return revCommitList.get(commitId);
 	}
 }
