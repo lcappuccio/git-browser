@@ -1,3 +1,5 @@
+package com.appway.gitbrowser.test;
+
 import com.appway.gitbrowser.Application;
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.model.Tag;
