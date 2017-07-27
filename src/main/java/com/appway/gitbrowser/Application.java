@@ -26,7 +26,6 @@ public class Application {
 	public static void main(String[] args) {
 
 		SpringApplication.run(Application.class, args);
-
 	}
 
 	@Bean
@@ -36,7 +35,6 @@ public class Application {
 
 	@Bean
 	public GitApi gitApi() throws GitAPIException {
-
 		return new GitApiImpl(getGitRepository().getRepository(), gitLogContainer());
 	}
 
