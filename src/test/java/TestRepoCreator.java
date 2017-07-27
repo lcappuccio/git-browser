@@ -1,8 +1,10 @@
 import com.appway.gitbrowser.Application;
 import com.appway.gitbrowser.model.Commit;
+import com.appway.gitbrowser.model.Tag;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
@@ -20,10 +22,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class})
@@ -72,7 +73,7 @@ public class TestRepoCreator {
 	}
 
 	@Test
-	public void create_domain_object() throws IOException, GitAPIException, ParseException {
+	public void should_create_domain_object() throws IOException, GitAPIException, ParseException {
 
 		commitFile();
 		Iterable<RevCommit> revCommits = git.log().call();
@@ -82,6 +83,20 @@ public class TestRepoCreator {
 		assertEquals("TestCommitter", commit.getAuthor());
 		assertEquals(19, commit.formatCommitDateTime().length());
 		assertTrue(commit.getDateTime().before(new Date(System.currentTimeMillis())));
+	}
+
+	@Test
+	public void should_tag() throws GitAPIException, IOException {
+
+		commitFile();
+		createTag();
+
+		List<Ref> tagList = git.tagList().call();
+		Tag tag = new Tag(tagList.get(0));
+
+		assertEquals("refs/tags/0.1", tag.getName());
+		assertNotNull(tag.getId());
+
 	}
 
 	private void clearPreviousRun() throws IOException {
@@ -115,6 +130,14 @@ public class TestRepoCreator {
 			logger.error(message);
 			throw new IOException(message);
 		}
+	}
+
+	private void createTag() throws GitAPIException {
+
+		String versionTag = "0.1";
+		git.tag().setName(versionTag).call();
+
+		logger.info("Tagged " + versionTag);
 	}
 
 	private int getCommitCount() throws GitAPIException {
