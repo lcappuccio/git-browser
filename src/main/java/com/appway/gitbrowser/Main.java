@@ -26,8 +26,7 @@ public class Main {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		// Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/
-		// .git"))
+		// Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/.git"))
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
