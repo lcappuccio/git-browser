@@ -1,6 +1,6 @@
 package com.appway.gitbrowser.services;
 
-import com.appway.gitbrowser.model.Commit;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -9,6 +9,7 @@ import org.neo4j.graphdb.index.RelationshipIndex;
 import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
@@ -26,6 +27,7 @@ public class GraphApiImpl implements GraphApi {
 	private Index<Node> indexCommitId;
 	private RelationshipIndex indexParent;
 
+	@Autowired
 	public GraphApiImpl(final String dbFolder) {
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
@@ -35,22 +37,22 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
-	public List<Commit> findAll() {
+	public List<RevCommit> findAll() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public Commit findById(String commitId) {
+	public RevCommit findById(String commitId) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<Commit> findCommitsByMessage(String commitMessage) {
+	public List<RevCommit> findCommitsByMessage(String commitMessage) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<Commit> findCommitsThatContainMessage(String textToSearch) {
+	public List<RevCommit> findCommitsThatContainMessage(String textToSearch) {
 		throw new NotImplementedException();
 	}
 

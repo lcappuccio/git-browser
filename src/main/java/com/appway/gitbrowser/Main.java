@@ -1,5 +1,10 @@
 package com.appway.gitbrowser;
 
+import com.appway.gitbrowser.model.Commit;
+import com.appway.gitbrowser.pojo.DomainObjectConverter;
+import com.appway.gitbrowser.pojo.GitLogContainer;
+import com.appway.gitbrowser.services.GitApi;
+import com.appway.gitbrowser.services.GitApiImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -21,25 +26,27 @@ public class Main {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		// 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/.git"))
+		// Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/
+		// .git"))
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
 				.build();
 
 		Git gitRepository = new Git(repository);
-		Iterable<RevCommit> revCommits = gitRepository.log().all().call();
-		for (RevCommit revCommit : revCommits) {
-			System.out.println("ID " + revCommit.getId());
-			System.out.println("Date " + getCommitDate(revCommit.getCommitTime()));
-			System.out.println("Author " + revCommit.getAuthorIdent().getName());
-			System.out.println("Message " + revCommit.getFullMessage().trim());
-			if (revCommit.getParents().length > 0) {
-				RevCommit parent = revCommit.getParent(0);
-				if (parent != null) {
-					System.out.println("Parent " + parent.getId());
-					System.out.println("----");
-				}
+		GitLogContainer gitLogContainer = new GitLogContainer(gitRepository);
+		GitApi gitApi = new GitApiImpl(repository, gitLogContainer);
+
+		List<Commit> revCommits = gitApi.getAllCommits();
+		for (Commit commit : revCommits) {
+			System.out.println("ID " + commit.getId());
+			System.out.println("Date " + DomainObjectConverter.formatCommitDateTime(commit.getDateTime()));
+			System.out.println("Author " + commit.getAuthor());
+			System.out.println("Message " + commit.getMessage());
+			Commit parent = gitApi.getParentOf(commit);
+			if (parent != null) {
+				System.out.println("Parent " + parent.getId());
+				System.out.println("----");
 			}
 			++commits;
 		}
@@ -60,7 +67,8 @@ public class Main {
 			// and finally...
 			Iterable<RevCommit> logs = tagsGitLog.call();
 			for (RevCommit rev : logs) {
-				System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id: " + rev.getId().getName() */);
+				System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id: " + rev.getId().getName()
+				 */);
 			}
 		}
 

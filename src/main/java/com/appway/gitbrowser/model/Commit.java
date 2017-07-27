@@ -1,9 +1,5 @@
 package com.appway.gitbrowser.model;
 
-import org.eclipse.jgit.revwalk.RevCommit;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Commit {
@@ -16,11 +12,11 @@ public class Commit {
 	public Commit() {
 	}
 
-	public Commit(RevCommit revCommit) {
-		this.id = revCommit.getId().toString();
-		this.dateTime = new Date(revCommit.getCommitTime() * 1000L);
-		this.author = revCommit.getAuthorIdent().getName();
-		this.message = revCommit.getFullMessage().trim();
+	public Commit(String commitId, int commitEpoch, String commitAuthor, String commitMessage) {
+		this.id = commitId;
+		this.dateTime = new Date(commitEpoch * 1000L);
+		this.author = commitAuthor;
+		this.message = commitMessage;
 	}
 
 	public String getId() {
@@ -53,17 +49,5 @@ public class Commit {
 
 	public void setMessage(String message) {
 		this.message = message;
-	}
-
-	/**
-	 * Convert commit date to a standard format
-	 *
-	 * @return
-	 * @throws ParseException
-	 */
-	public String formatCommitDateTime() throws ParseException {
-
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return simpleDateFormat.format(dateTime);
 	}
 }

@@ -3,6 +3,7 @@ package com.appway.gitbrowser.test;
 import com.appway.gitbrowser.Application;
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.model.Tag;
+import com.appway.gitbrowser.pojo.DomainObjectConverter;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -79,11 +80,11 @@ public class TestRepoCreator {
 
 		commitFile();
 		Iterable<RevCommit> revCommits = git.log().call();
-		Commit commit = new Commit(revCommits.iterator().next());
+		Commit commit = DomainObjectConverter.convertFrom(revCommits.iterator().next());
 
 		assertEquals("Added testfile", commit.getMessage());
 		assertEquals("TestCommitter", commit.getAuthor());
-		assertEquals(19, commit.formatCommitDateTime().length());
+		assertEquals(19, DomainObjectConverter.formatCommitDateTime(commit.getDateTime()).length());
 		assertTrue(commit.getDateTime().before(new Date(System.currentTimeMillis())));
 	}
 
