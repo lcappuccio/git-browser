@@ -1,5 +1,7 @@
 package com.appway.gitbrowser;
 
+import com.appway.gitbrowser.services.GitApi;
+import com.appway.gitbrowser.services.GitApiImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -27,19 +29,19 @@ public class Main {
 				.findGitDir() // scan up the file system tree
 				.build();
 
+		GitApi gitApi = new GitApiImpl(repository);
+
 		Git gitRepository = new Git(repository);
-		Iterable<RevCommit> revCommits = gitRepository.log().all().call();
+		Iterable<RevCommit> revCommits = gitApi.getAllCommits();
 		for (RevCommit revCommit : revCommits) {
 			System.out.println("ID " + revCommit.getId());
 			System.out.println("Date " + getCommitDate(revCommit.getCommitTime()));
 			System.out.println("Author " + revCommit.getAuthorIdent().getName());
 			System.out.println("Message " + revCommit.getFullMessage().trim());
-			if (revCommit.getParents().length > 0) {
-				RevCommit parent = revCommit.getParent(0);
-				if (parent != null) {
-					System.out.println("Parent " + parent.getId());
-					System.out.println("----");
-				}
+			RevCommit parent = gitApi.getParentOf(revCommit);
+			if (parent != null) {
+				System.out.println("Parent " + parent.getId());
+				System.out.println("----");
 			}
 			++commits;
 		}
