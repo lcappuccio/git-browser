@@ -1,5 +1,7 @@
 package com.appway.gitbrowser;
 
+import com.appway.gitbrowser.model.Commit;
+import com.appway.gitbrowser.pojo.DomainObjectConverter;
 import com.appway.gitbrowser.services.GitApi;
 import com.appway.gitbrowser.services.GitApiImpl;
 import org.eclipse.jgit.api.Git;
@@ -23,7 +25,6 @@ public class Main {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
-		// 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects_Appway/appway/.git"))
 		Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/simplexdb/.git"))
 				.readEnvironment() // scan environment GIT_* variables
 				.findGitDir() // scan up the file system tree
@@ -32,13 +33,13 @@ public class Main {
 		GitApi gitApi = new GitApiImpl(repository);
 
 		Git gitRepository = new Git(repository);
-		Iterable<RevCommit> revCommits = gitApi.getAllCommits();
-		for (RevCommit revCommit : revCommits) {
-			System.out.println("ID " + revCommit.getId());
-			System.out.println("Date " + getCommitDate(revCommit.getCommitTime()));
-			System.out.println("Author " + revCommit.getAuthorIdent().getName());
-			System.out.println("Message " + revCommit.getFullMessage().trim());
-			RevCommit parent = gitApi.getParentOf(revCommit);
+		List<Commit> revCommits = gitApi.getAllCommits();
+		for (Commit commit : revCommits) {
+			System.out.println("ID " + commit.getId());
+			System.out.println("Date " + DomainObjectConverter.formatCommitDateTime(commit.getDateTime()));
+			System.out.println("Author " + commit.getAuthor());
+			System.out.println("Message " + commit.getMessage());
+			Commit parent = gitApi.getParentOf(commit);
 			if (parent != null) {
 				System.out.println("Parent " + parent.getId());
 				System.out.println("----");
@@ -62,7 +63,8 @@ public class Main {
 			// and finally...
 			Iterable<RevCommit> logs = tagsGitLog.call();
 			for (RevCommit rev : logs) {
-				System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id: " + rev.getId().getName() */);
+				System.out.println("Commit: " + rev /* + ", name: " + rev.getName() + ", id: " + rev.getId().getName()
+				 */);
 			}
 		}
 

@@ -9,6 +9,7 @@ import org.neo4j.graphdb.index.RelationshipIndex;
 import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
@@ -26,6 +27,7 @@ public class GraphApiImpl implements GraphApi {
 	private Index<Node> indexCommitId;
 	private RelationshipIndex indexParent;
 
+	@Autowired
 	public GraphApiImpl(final String dbFolder) {
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
