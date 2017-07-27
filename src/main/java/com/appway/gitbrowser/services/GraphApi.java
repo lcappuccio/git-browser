@@ -1,9 +1,11 @@
 package com.appway.gitbrowser.services;
 
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface GraphApi {
 
 	/**

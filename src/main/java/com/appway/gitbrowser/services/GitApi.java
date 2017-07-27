@@ -2,10 +2,12 @@ package com.appway.gitbrowser.services;
 
 import com.appway.gitbrowser.model.Commit;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
 
+@Service
 public interface GitApi {
 
 	/**
