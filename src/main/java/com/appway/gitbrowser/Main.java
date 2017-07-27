@@ -33,7 +33,7 @@ public class Main {
 				.findGitDir() // scan up the file system tree
 				.build();
 
-		Git gitRepository = new Git(repository);
+		Git gitRepository = new Git(repository);//
 		GitLogContainer gitLogContainer = new GitLogContainer(gitRepository);
 		GitApi gitApi = new GitApiImpl(repository, gitLogContainer);
 
