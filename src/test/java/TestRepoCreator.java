@@ -1,4 +1,5 @@
 import com.appway.gitbrowser.Application;
+import com.appway.gitbrowser.model.Commit;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -17,9 +18,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class})
@@ -62,14 +66,22 @@ public class TestRepoCreator {
 	@Test
 	public void should_make_a_commit() throws IOException, GitAPIException {
 
-		FileUtils.write(SOME_TEST_FILE, "First line", Charset.defaultCharset());
-		git.add().addFilepattern(SOME_TEST_FILE.getAbsolutePath()).call();
-		logger.info("Added file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
-
-		git.commit().setMessage("Added testfile").call();
-		logger.info("Committed file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
+		commitFile();
 
 		assertEquals(1, getCommitCount());
+	}
+
+	@Test
+	public void create_domain_object() throws IOException, GitAPIException, ParseException {
+
+		commitFile();
+		Iterable<RevCommit> revCommits = git.log().call();
+		Commit commit = new Commit(revCommits.iterator().next());
+
+		assertEquals("Added testfile", commit.getMessage());
+		assertEquals("TestCommitter", commit.getAuthor());
+		assertEquals(19, commit.formatCommitDateTime().length());
+		assertTrue(commit.getDateTime().before(new Date(System.currentTimeMillis())));
 	}
 
 	private void clearPreviousRun() throws IOException {
@@ -82,6 +94,17 @@ public class TestRepoCreator {
 			logger.error(message);
 			throw new IOException(message);
 		}
+	}
+
+	private void commitFile() throws IOException, GitAPIException {
+
+		FileUtils.write(SOME_TEST_FILE, "First line", Charset.defaultCharset());
+		git.add().addFilepattern(SOME_TEST_FILE.getAbsolutePath()).call();
+		logger.info("Added file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
+
+		git.commit().setMessage("Added testfile").setAuthor("TestCommitter", "testcommitter@somemail")
+				.call();
+		logger.info("Committed file " + SOME_TEST_FILE + " to repository at " + repository.getDirectory());
 	}
 
 	private void createNewRepositoryFolder() throws IOException {
