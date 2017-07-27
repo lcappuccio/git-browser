@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface GitApi {
 
 	/**
-	 * Get a parent of a given commit
+	 * Get parent of a given commit
 	 *
 	 * @param revCommit
 	 * @return
