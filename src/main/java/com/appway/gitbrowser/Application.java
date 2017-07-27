@@ -21,7 +21,6 @@ public class Application {
 	private String databaseFolder;
 	@Value("${repository.folder}")
 	private String repositoryFolder;
-	private Git gitRepository;
 
 	public static void main(String[] args) {
 
