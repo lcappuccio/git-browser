@@ -11,7 +11,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class TestRepoCreator {
 		return repository;
 	}
 
-	@BeforeClass
+	@Before
 	public void setUp() throws IOException, GitAPIException {
 
 		clearPreviousRun();
