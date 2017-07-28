@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -83,5 +84,11 @@ public class GraphApiImpl implements GraphApi {
 			}
 			tx.success();
 		}
+	}
+
+	@PreDestroy
+	private void close() {
+		LOGGER.info("close database");
+		graphDb.shutdown();
 	}
 }
