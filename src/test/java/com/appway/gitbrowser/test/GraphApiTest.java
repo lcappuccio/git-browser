@@ -97,7 +97,7 @@ public class GraphApiTest {
 
 		Commit parentCommit = sut.findParentOf(rootCommit);
 
-		assertEquals(rootCommit, parentCommit);
+		assertNull(parentCommit);
 	}
 
 	@Test

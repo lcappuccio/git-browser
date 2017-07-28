@@ -104,7 +104,7 @@ public class GraphApiImpl implements GraphApi {
 
 	@Override
 	public Commit findParentOf(Commit commit) {
-		
+
 		LOGGER.info("Find parent commit of: " + commit.getId());
 		Commit parentCommit = null;
 		try (Transaction tx = graphDb.beginTx()) {
@@ -113,9 +113,9 @@ public class GraphApiImpl implements GraphApi {
 			tx.success();
 			while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
-				for (Relationship relationship: commitNode.getRelationships(parentRelation)) {
-					Node startNode = relationship.getEndNode();
-					parentCommit = fromNode(startNode);
+				for (Relationship relationship : commitNode.getRelationships(parentRelation)) {
+					Node endNode = relationship.getEndNode();
+					parentCommit = fromNode(endNode);
 				}
 			}
 		}
@@ -132,16 +132,15 @@ public class GraphApiImpl implements GraphApi {
 			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
 			while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
-				Node parentNode = null;
 				Commit commit = fromNode(commitNode);
 				Commit parentCommit = gitApi.getParentOf(commit);
 				if (parentCommit != null) {
 					Iterator<Node> parentNodeIterator =
 							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
 					if (parentNodeIterator.hasNext()) {
-						parentNode = nodeIterator.next();
+						Node parentNode = nodeIterator.next();
+						commitNode.createRelationshipTo(parentNode, parentRelation);
 					}
-					commitNode.createRelationshipTo(parentNode, parentRelation);
 				}
 			}
 			tx.success();
