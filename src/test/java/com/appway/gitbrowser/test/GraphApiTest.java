@@ -42,7 +42,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_a_commit_by_message() {
+	public void should_find_a_commit_list_by_message() {
 
 		String messageToFind = "travis";
 
@@ -54,5 +54,17 @@ public class GraphApiTest {
 		assertEquals("3c0a72207401d4e113eb4caadce3de0c8eee42ed", commitsByMessage.get(2).getId());
 		assertEquals("bea5823e343f571bb2373ec0770e5bc9c9675c13", commitsByMessage.get(3).getId());
 		assertEquals("49c8f3932694916e99fb7946725e93349cacb941", commitsByMessage.get(4).getId());
+	}
+
+	@Test
+	public void should_find_a_commit_by_message() {
+
+		String messageToFind = "add travis build";
+
+		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
+
+		assertTrue(commitsByMessage.size() == 1);
+		assertEquals("49c8f3932694916e99fb7946725e93349cacb941", commitsByMessage.get(0).getId());
+		assertEquals("add travis build", commitsByMessage.get(0).getMessage());
 	}
 }
