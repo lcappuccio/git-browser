@@ -1,20 +1,18 @@
 package com.appway.gitbrowser.model;
 
-import java.util.Date;
-
 public class Commit {
 
 	private String id;
-	private Date dateTime;
+	private long dateTime;
 	private String author;
 	private String message;
 
 	public Commit() {
 	}
 
-	public Commit(String commitId, int commitEpoch, String commitAuthor, String commitMessage) {
+	public Commit(String commitId, long commitEpoch, String commitAuthor, String commitMessage) {
 		this.id = commitId;
-		this.dateTime = new Date(commitEpoch * 1000L);
+		this.dateTime = commitEpoch;
 		this.author = commitAuthor;
 		this.message = commitMessage;
 	}
@@ -27,11 +25,11 @@ public class Commit {
 		this.id = id;
 	}
 
-	public Date getDateTime() {
+	public long getDateTime() {
 		return dateTime;
 	}
 
-	public void setDateTime(Date dateTime) {
+	public void setDateTime(long dateTime) {
 		this.dateTime = dateTime;
 	}
 

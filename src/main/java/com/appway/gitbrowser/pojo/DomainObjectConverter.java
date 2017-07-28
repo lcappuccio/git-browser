@@ -4,7 +4,6 @@ import com.appway.gitbrowser.model.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class DomainObjectConverter {
 
@@ -18,7 +17,7 @@ public class DomainObjectConverter {
 
 		String authorName = revCommit.getAuthorIdent().getName();
 		String message = revCommit.getFullMessage().trim();
-		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime(), authorName, message);
+		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime() * 1000L, authorName, message);
 	}
 
 	public static RevCommit convertFrom(Commit commit, GitLogContainer gitLogContainer) {
@@ -32,7 +31,7 @@ public class DomainObjectConverter {
 	 * @param commitDateTime
 	 * @return
 	 */
-	public static String formatCommitDateTime(Date commitDateTime) {
+	public static String formatCommitDateTime(long commitDateTime) {
 
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return simpleDateFormat.format(commitDateTime);

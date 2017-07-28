@@ -24,10 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class})
@@ -84,8 +85,7 @@ public class TestRepoCreator {
 
 		assertEquals("Added testfile", commit.getMessage());
 		assertEquals("TestCommitter", commit.getAuthor());
-		assertEquals(19, DomainObjectConverter.formatCommitDateTime(commit.getDateTime()).length());
-		assertTrue(commit.getDateTime().before(new Date(System.currentTimeMillis())));
+		assertTrue(commit.getDateTime() < System.currentTimeMillis());
 	}
 
 	@Test
