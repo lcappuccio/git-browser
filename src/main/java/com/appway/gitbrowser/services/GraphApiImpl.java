@@ -47,6 +47,8 @@ public class GraphApiImpl implements GraphApi {
 			// Commit parentCommit = gitApi.getParentOf(commit);
 			insertCommit(commit);
 		}
+
+		LOGGER.info("Added " + allCommits.size() + " commits");
 	}
 
 	@Override
@@ -146,7 +148,6 @@ public class GraphApiImpl implements GraphApi {
 			// TODO LC add relationship here
 
 			tx.success();
-			LOGGER.info("Added " + commit.getId());
 		}
 	}
 }
