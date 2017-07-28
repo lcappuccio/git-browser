@@ -1,18 +1,16 @@
 package com.appway.gitbrowser.test;
 
 import com.appway.gitbrowser.Application;
+import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.services.GraphApi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -20,15 +18,24 @@ import static org.junit.Assert.assertNotNull;
 @TestPropertySource(locations = "classpath:application.properties")
 public class GraphApiTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(GraphApiTest.class);
-	private static final String DATABASE_FOLDER = "target" + File.separator + "test_database";
 	@Autowired
-	private GraphApi graphApi;
+	private GraphApi sut;
 
 	@Test
 	public void should_have_graph_api() {
 
-		assertNotNull(graphApi);
+		assertNotNull(sut);
+	}
+
+	@Test
+	public void should_find_a_commit(){
+
+		// first commit in simplexdb
+		String commitId = "22090d7b8466832c153e93444a0f4292d1b377d9";
+
+		Commit commitById = sut.findById(commitId);
+
+		assertEquals(commitId, commitById.getId());
 	}
 
 }
