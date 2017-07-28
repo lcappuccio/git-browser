@@ -3,23 +3,22 @@ package com.appway.gitbrowser.services;
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.pojo.DomainObjectConverter;
 import com.appway.gitbrowser.pojo.GitLogContainer;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 public class GitApiImpl implements GitApi {
 
-	private final Git git;
 	private final GitLogContainer gitLogContainer;
 
 	@Autowired
-	public GitApiImpl(Repository repository, GitLogContainer gitLogContainer) {
-		git = new Git(repository);
+	public GitApiImpl(GitLogContainer gitLogContainer) {
 		this.gitLogContainer = gitLogContainer;
 	}
 
@@ -41,8 +40,9 @@ public class GitApiImpl implements GitApi {
 	public List<Commit> getAllCommits() throws GitAPIException, IOException {
 
 		List<Commit> commits = new ArrayList<>();
-		Iterable<RevCommit> revCommits = git.log().all().call();
-		for (RevCommit revCommit: revCommits) {
+		Set<String> commitIds = gitLogContainer.getCommitIds();
+		for (String commitId : commitIds) {
+			RevCommit revCommit = gitLogContainer.getRevCommit(commitId);
 			commits.add(DomainObjectConverter.convertFrom(revCommit));
 		}
 

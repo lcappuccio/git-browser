@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class GitLogContainer {
 
@@ -21,12 +22,15 @@ public class GitLogContainer {
 		Iterable<RevCommit> refCollection = gitRepository.log().call();
 		for (RevCommit revCommit: refCollection) {
 			revCommitList.put(revCommit.getId().getName(), revCommit);
-			LOGGER.info("Added " + revCommit.getId().getName());
 		}
 		LOGGER.info("Added " + revCommitList.size() + " commits");
 	}
 
 	public RevCommit getRevCommit(final String commitId) {
 		return revCommitList.get(commitId);
+	}
+
+	public Set<String> getCommitIds() {
+		return revCommitList.keySet();
 	}
 }

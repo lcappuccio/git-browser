@@ -8,10 +8,17 @@ import java.util.Date;
 
 public class DomainObjectConverter {
 
+	/**
+	 * Convert JGit commit object to our domain
+	 *
+	 * @param revCommit
+	 * @return
+	 */
 	public static Commit convertFrom(RevCommit revCommit) {
 
-		String name = revCommit.getAuthorIdent().getName();
-		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime(), name, revCommit.getFullMessage());
+		String authorName = revCommit.getAuthorIdent().getName();
+		String message = revCommit.getFullMessage().trim();
+		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime(), authorName, message);
 	}
 
 	public static RevCommit convertFrom(Commit commit, GitLogContainer gitLogContainer) {
@@ -22,6 +29,7 @@ public class DomainObjectConverter {
 	/**
 	 * Convert commit date to a standard format
 	 *
+	 * @param commitDateTime
 	 * @return
 	 */
 	public static String formatCommitDateTime(Date commitDateTime) {

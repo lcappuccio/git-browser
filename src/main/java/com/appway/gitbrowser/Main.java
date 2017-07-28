@@ -32,7 +32,7 @@ public class Main {
 
 		Git gitRepository = new Git(repository);
 		GitLogContainer gitLogContainer = new GitLogContainer(gitRepository);
-		GitApi gitApi = new GitApiImpl(repository, gitLogContainer);
+		GitApi gitApi = new GitApiImpl(gitLogContainer);
 
 		List<Commit> revCommits = gitApi.getAllCommits();
 		for (Commit commit : revCommits) {
