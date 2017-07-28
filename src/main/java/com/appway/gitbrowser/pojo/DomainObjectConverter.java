@@ -4,7 +4,6 @@ import com.appway.gitbrowser.model.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class DomainObjectConverter {
 
@@ -32,7 +31,7 @@ public class DomainObjectConverter {
 	 * @param commitDateTime
 	 * @return
 	 */
-	public static String formatCommitDateTime(Date commitDateTime) {
+	public static String formatCommitDateTime(long commitDateTime) {
 
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return simpleDateFormat.format(commitDateTime);

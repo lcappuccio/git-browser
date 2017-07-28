@@ -49,7 +49,11 @@ public class GitApiImpl implements GitApi {
 		commits.sort(new Comparator<Commit>() {
 			@Override
 			public int compare(Commit o1, Commit o2) {
-				return o2.getDateTime().compareTo(o1.getDateTime());
+				if (o2.getDateTime() < o1.getDateTime()) {
+					return -1;
+				} else {
+					return 1;
+				}
 			}
 		});
 		return commits;
