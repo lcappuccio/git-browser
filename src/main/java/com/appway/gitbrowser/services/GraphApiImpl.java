@@ -1,5 +1,7 @@
 package com.appway.gitbrowser.services;
 
+import com.appway.gitbrowser.model.Commit;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -14,6 +16,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,20 +24,30 @@ public class GraphApiImpl implements GraphApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphApiImpl.class);
 
+	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
-	private final RelationshipType parentRelation = RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
+	private final RelationshipType parentRelation = RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString
+			());
 	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 
 	private Index<Node> indexCommitId;
 	private RelationshipIndex indexParent;
 
 	@Autowired
-	public GraphApiImpl(final String dbFolder) {
+	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
+		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
 		createIndexes(indexManager);
 		createSchema();
 		LOGGER.info("Creating database at " + dbFolder);
+
+		// Fill database
+		List<Commit> allCommits = gitApi.getAllCommits();
+		for (Commit commit : allCommits) {
+			// Commit parentCommit = gitApi.getParentOf(commit);
+			insertCommit(commit);
+		}
 	}
 
 	@Override
@@ -90,5 +103,29 @@ public class GraphApiImpl implements GraphApi {
 	private void close() {
 		LOGGER.info("close database");
 		graphDb.shutdown();
+	}
+
+	private void insertCommit(Commit commit) throws IOException, GitAPIException {
+
+		try (Transaction tx = graphDb.beginTx()) {
+
+			Node commitNode = graphDb.createNode();
+			commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
+			commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+
+			try {
+				commitNode.addLabel(constraintCommitLabel);
+			} catch (ConstraintViolationException ex) {
+				String errorMessage = ex.getMessage();
+				tx.failure();
+				LOGGER.error(commit.getId() + ": " + errorMessage);
+				throw new ConstraintViolationException(errorMessage);
+			}
+
+			indexCommitId.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getId());
+			// TODO LC add relationship here
+
+			LOGGER.info("Added " + commit.getId());
+		}
 	}
 }
