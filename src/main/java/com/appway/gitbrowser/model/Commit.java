@@ -48,4 +48,26 @@ public class Commit {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Commit commit = (Commit) o;
+
+		if (dateTime != commit.dateTime) return false;
+		if (id != null ? !id.equals(commit.id) : commit.id != null) return false;
+		if (author != null ? !author.equals(commit.author) : commit.author != null) return false;
+		return message != null ? message.equals(commit.message) : commit.message == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (int) (dateTime ^ (dateTime >>> 32));
+		result = 31 * result + (author != null ? author.hashCode() : 0);
+		result = 31 * result + (message != null ? message.hashCode() : 0);
+		return result;
+	}
 }

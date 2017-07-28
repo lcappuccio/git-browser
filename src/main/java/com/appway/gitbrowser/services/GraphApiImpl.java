@@ -11,7 +11,6 @@ import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
@@ -108,7 +107,23 @@ public class GraphApiImpl implements GraphApi {
 	@Override
 	public Commit findParentOf(Commit commit) {
 
-		throw new NotImplementedException();
+		// Commit parentOf = gitApi.getParentOf(commit);
+		// return findById(parentOf.getId());
+		LOGGER.info("Find parent commit of: " + commit.getId());
+		Commit parentCommit = null;
+		try (Transaction tx = graphDb.beginTx()) {
+			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId())
+					.iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node commitNode = nodeIterator.next();
+				for (Relationship relationship: commitNode.getRelationships(parentRelation)) {
+					Node startNode = relationship.getEndNode();
+					parentCommit = fromNode(startNode);
+				}
+			}
+		}
+		return parentCommit;
 	}
 
 	/**

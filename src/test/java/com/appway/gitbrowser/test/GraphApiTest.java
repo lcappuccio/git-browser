@@ -77,6 +77,30 @@ public class GraphApiTest {
 	}
 
 	@Test
+	public void should_have_parent() {
+
+		String commitId = "2e93bd8b06b8f51feb86eb6b5a55363e3c99fa17";
+		Commit childCommit = sut.findById(commitId);
+
+		Commit parentCommit = sut.findParentOf(childCommit);
+
+		assertNotNull(parentCommit);
+		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", parentCommit.getId());
+		assertEquals("repo init", parentCommit.getMessage());
+	}
+
+	@Test
+	public void should_have_no_parent() {
+
+		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
+		Commit rootCommit = sut.findById(commitId);
+
+		Commit parentCommit = sut.findParentOf(rootCommit);
+
+		assertEquals(rootCommit, parentCommit);
+	}
+
+	@Test
 	public void should_find_all() {
 
 		List<Commit> all = sut.findAll();
