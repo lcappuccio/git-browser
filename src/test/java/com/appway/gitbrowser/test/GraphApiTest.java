@@ -2,6 +2,7 @@ package com.appway.gitbrowser.test;
 
 import com.appway.gitbrowser.Application;
 import com.appway.gitbrowser.model.Commit;
+import com.appway.gitbrowser.pojo.DomainObjectConverter;
 import com.appway.gitbrowser.services.GraphApi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {Application.class})
@@ -39,7 +38,12 @@ public class GraphApiTest {
 		Commit commitById = sut.findById(commitId);
 
 		assertEquals(commitId, commitById.getId());
+		assertFalse(commitById.getAuthor().isEmpty());
+		assertFalse(commitById.getMessage().isEmpty());
+		assertNotEquals(0, commitById.getDateTime());
 		assertEquals("code style", commitById.getMessage());
+		assertEquals("2017-07-28 10:49:03",
+				DomainObjectConverter.formatCommitDateTime(commitById.getDateTime()));
 	}
 
 	@Test
@@ -67,6 +71,8 @@ public class GraphApiTest {
 		assertTrue(commitsByMessage.size() == 1);
 		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());
 		assertEquals("repo init", commitsByMessage.get(0).getMessage());
+		assertEquals("2017-07-25 16:25:46",
+				DomainObjectConverter.formatCommitDateTime(commitsByMessage.get(0).getDateTime()));
 	}
 
 	@Test

@@ -12,7 +12,7 @@ public class Commit {
 
 	public Commit(String commitId, long commitEpoch, String commitAuthor, String commitMessage) {
 		this.id = commitId;
-		this.dateTime = commitEpoch * 1000L;
+		this.dateTime = commitEpoch;
 		this.author = commitAuthor;
 		this.message = commitMessage;
 	}

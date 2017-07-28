@@ -17,7 +17,7 @@ public class DomainObjectConverter {
 
 		String authorName = revCommit.getAuthorIdent().getName();
 		String message = revCommit.getFullMessage().trim();
-		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime(), authorName, message);
+		return new Commit(revCommit.getId().getName(), revCommit.getCommitTime() * 1000L, authorName, message);
 	}
 
 	public static RevCommit convertFrom(Commit commit, GitLogContainer gitLogContainer) {
