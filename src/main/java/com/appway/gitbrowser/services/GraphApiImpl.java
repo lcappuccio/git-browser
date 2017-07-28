@@ -167,8 +167,6 @@ public class GraphApiImpl implements GraphApi {
 			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
 			indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
 
-			// TODO LC add relationship here
-
 			tx.success();
 		}
 	}
@@ -181,7 +179,6 @@ public class GraphApiImpl implements GraphApi {
 		try (Transaction tx = graphDb.beginTx()) {
 
 			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
-			tx.success();
 			while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
 				Node parentNode = null;
@@ -190,13 +187,11 @@ public class GraphApiImpl implements GraphApi {
 				if (parentCommit != null) {
 					Iterator<Node> parentNodeIterator =
 							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
-					tx.success();
 					if (parentNodeIterator.hasNext()) {
 						parentNode = nodeIterator.next();
 					}
 					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
 					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
-					tx.success();
 				}
 			}
 			tx.success();
