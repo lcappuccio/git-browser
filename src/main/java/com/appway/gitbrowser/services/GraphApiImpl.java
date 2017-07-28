@@ -51,7 +51,18 @@ public class GraphApiImpl implements GraphApi {
 
 	@Override
 	public List<Commit> findAll() {
-		throw new NotImplementedException();
+
+		List<Commit> allCommits = new ArrayList<>();
+		LOGGER.info("Find all");
+		try (Transaction tx = graphDb.beginTx()) {
+			ResourceIterator<Node> nodeResourceIterator = graphDb.getAllNodes().iterator();
+			tx.success();
+			while (nodeResourceIterator.hasNext()) {
+				Node node = nodeResourceIterator.next();
+				allCommits.add(fromNode(node));
+			}
+		}
+		return allCommits;
 	}
 
 	@Override
@@ -63,11 +74,7 @@ public class GraphApiImpl implements GraphApi {
 			tx.success();
 			while (nodeIterator.hasNext()) {
 				Node node = nodeIterator.next();
-				String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
-				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
-
-				commit.setId(nodeCommitId);
-				commit.setMessage(nodeCommitMessage);
+				commit = fromNode(node);
 			}
 		}
 		return commit;
@@ -82,14 +89,10 @@ public class GraphApiImpl implements GraphApi {
 			tx.success();
 			while (nodeIterator.hasNext()) {
 				Node node = nodeIterator.next();
-				String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
 				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
 
 				if (nodeCommitMessage.contains(commitMessage)) {
-					Commit commit = new Commit();
-					commit.setId(nodeCommitId);
-					commit.setMessage(nodeCommitMessage);
-					commitList.add(commit);
+					commitList.add(fromNode(node));
 				}
 
 			}
@@ -147,6 +150,8 @@ public class GraphApiImpl implements GraphApi {
 		try (Transaction tx = graphDb.beginTx()) {
 
 			Node commitNode = graphDb.createNode();
+			commitNode.setProperty(GraphProperties.COMMIT_AUTHOR.toString(), commit.getAuthor());
+			commitNode.setProperty(GraphProperties.COMMIT_DATETIME.toString(), commit.getDateTime());
 			commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
 			commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
 
@@ -166,5 +171,15 @@ public class GraphApiImpl implements GraphApi {
 
 			tx.success();
 		}
+	}
+
+	private Commit fromNode(Node node) {
+
+		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
+		Long nodeCommitDateTime =
+				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
+		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+		return  new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
 	}
 }
