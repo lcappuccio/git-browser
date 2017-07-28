@@ -2,7 +2,6 @@ package com.appway.gitbrowser.services;
 
 import com.appway.gitbrowser.model.Commit;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -51,22 +50,36 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
-	public List<RevCommit> findAll() {
+	public List<Commit> findAll() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public RevCommit findById(String commitId) {
+	public Commit findById(String commitId) {
+		Commit commit = new Commit();
+		LOGGER.info("Find commit id: " + commitId);
+		try (Transaction tx = graphDb.beginTx()) {
+			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commitId).iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node node = nodeIterator.next();
+				String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+
+				commit.setId(nodeCommitId);
+				commit.setMessage(nodeCommitMessage);
+			}
+		}
+		return commit;
+	}
+
+	@Override
+	public List<Commit> findCommitsByMessage(String commitMessage) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<RevCommit> findCommitsByMessage(String commitMessage) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<RevCommit> findCommitsThatContainMessage(String textToSearch) {
+	public List<Commit> findCommitsThatContainMessage(String textToSearch) {
 		throw new NotImplementedException();
 	}
 
@@ -105,6 +118,13 @@ public class GraphApiImpl implements GraphApi {
 		graphDb.shutdown();
 	}
 
+	/**
+	 * Insert commit to the database
+	 *
+	 * @param commit
+	 * @throws IOException
+	 * @throws GitAPIException
+	 */
 	private void insertCommit(Commit commit) throws IOException, GitAPIException {
 
 		try (Transaction tx = graphDb.beginTx()) {
@@ -122,9 +142,10 @@ public class GraphApiImpl implements GraphApi {
 				throw new ConstraintViolationException(errorMessage);
 			}
 
-			indexCommitId.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getId());
+			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
 			// TODO LC add relationship here
 
+			tx.success();
 			LOGGER.info("Added " + commit.getId());
 		}
 	}
