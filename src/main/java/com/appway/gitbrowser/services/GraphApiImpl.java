@@ -112,6 +112,33 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
+	 * Create the relations between node and its' parent
+	 */
+	private void addRelationships() {
+
+		try (Transaction tx = graphDb.beginTx()) {
+
+			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
+			while (nodeIterator.hasNext()) {
+				Node commitNode = nodeIterator.next();
+				Node parentNode = null;
+				Commit commit = fromNode(commitNode);
+				Commit parentCommit = gitApi.getParentOf(commit);
+				if (parentCommit != null) {
+					Iterator<Node> parentNodeIterator =
+							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
+					if (parentNodeIterator.hasNext()) {
+						parentNode = nodeIterator.next();
+					}
+					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
+					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
+				}
+			}
+			tx.success();
+		}
+	}
+
+	/**
 	 * Creates indexes with the given IndexManager
 	 *
 	 * @param indexManager
@@ -141,10 +168,21 @@ public class GraphApiImpl implements GraphApi {
 		}
 	}
 
-	@PreDestroy
-	private void close() {
-		LOGGER.info("close database");
-		graphDb.shutdown();
+	/**
+	 * Transform Node object to Commit
+	 *
+	 * @param node
+	 * @return
+	 */
+	private Commit fromNode(Node node) {
+
+		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
+		Long nodeCommitDateTime =
+				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
+		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+
+		return new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
 	}
 
 	/**
@@ -178,41 +216,9 @@ public class GraphApiImpl implements GraphApi {
 		}
 	}
 
-	/**
-	 * Create the relations between node and its' parent
-	 */
-	private void addRelationships() {
-
-		try (Transaction tx = graphDb.beginTx()) {
-
-			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
-			while (nodeIterator.hasNext()) {
-				Node commitNode = nodeIterator.next();
-				Node parentNode = null;
-				Commit commit = fromNode(commitNode);
-				Commit parentCommit = gitApi.getParentOf(commit);
-				if (parentCommit != null) {
-					Iterator<Node> parentNodeIterator =
-							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
-					if (parentNodeIterator.hasNext()) {
-						parentNode = nodeIterator.next();
-					}
-					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
-					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
-				}
-			}
-			tx.success();
-		}
-	}
-
-	private Commit fromNode(Node node) {
-
-		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
-		Long nodeCommitDateTime =
-				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
-		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
-		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
-
-		return new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
+	@PreDestroy
+	private void close() {
+		LOGGER.info("close database");
+		graphDb.shutdown();
 	}
 }
