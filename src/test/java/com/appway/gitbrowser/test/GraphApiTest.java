@@ -68,4 +68,12 @@ public class GraphApiTest {
 		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());
 		assertEquals("repo init", commitsByMessage.get(0).getMessage());
 	}
+
+	@Test
+	public void should_find_all() {
+
+		List<Commit> all = sut.findAll();
+
+		assertTrue(all.size() > 50);
+	}
 }
