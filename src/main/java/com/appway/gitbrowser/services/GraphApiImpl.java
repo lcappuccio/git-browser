@@ -24,6 +24,7 @@ public class GraphApiImpl implements GraphApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphApiImpl.class);
 
+	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
 	private final RelationshipType parentRelation =
 			RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
@@ -34,6 +35,8 @@ public class GraphApiImpl implements GraphApi {
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
+
+		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
 		createIndexes(indexManager);
@@ -45,6 +48,8 @@ public class GraphApiImpl implements GraphApi {
 		for (Commit commit : allCommits) {
 			insertCommit(commit);
 		}
+
+		addRelationships();
 
 		LOGGER.info("Added " + allCommits.size() + " commits");
 	}
@@ -114,6 +119,7 @@ public class GraphApiImpl implements GraphApi {
 		try (Transaction tx = graphDb.beginTx()) {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
 			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
+			indexParent = indexManager.forRelationships(GraphProperties.COMMIT_PARENT.toString());
 			tx.success();
 		}
 	}
@@ -173,6 +179,36 @@ public class GraphApiImpl implements GraphApi {
 		}
 	}
 
+	/**
+	 * Create the relations between node and its' parent
+	 */
+	private void addRelationships() {
+
+		try (Transaction tx = graphDb.beginTx()) {
+
+			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node commitNode = nodeIterator.next();
+				Node parentNode = null;
+				Commit commit = fromNode(commitNode);
+				Commit parentCommit = gitApi.getParentOf(commit);
+				if (parentCommit != null) {
+					Iterator<Node> parentNodeIterator =
+							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
+					tx.success();
+					if (parentNodeIterator.hasNext()) {
+						parentNode = nodeIterator.next();
+					}
+					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
+					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
+					tx.success();
+				}
+			}
+			tx.success();
+		}
+	}
+
 	private Commit fromNode(Node node) {
 
 		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
@@ -180,6 +216,7 @@ public class GraphApiImpl implements GraphApi {
 				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
 		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
 		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
-		return  new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
+
+		return new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
 	}
 }
