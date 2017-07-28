@@ -16,21 +16,15 @@ public class GitApiImpl implements GitApi {
 
 	private final Git git;
 	private final GitLogContainer gitLogContainer;
-	private final Repository repository;
 
 	@Autowired
 	public GitApiImpl(Repository repository, GitLogContainer gitLogContainer) {
-		this.repository = repository;
 		git = new Git(repository);
 		this.gitLogContainer = gitLogContainer;
 	}
 
-	public Repository getRepository() {
-		return repository;
-	}
-
 	@Override
-	public Commit getParentOf(Commit commit) throws GitAPIException {
+	public Commit getParentOf(Commit commit) {
 
 		RevCommit revCommit = DomainObjectConverter.convertFrom(commit, gitLogContainer);
 
@@ -44,7 +38,7 @@ public class GitApiImpl implements GitApi {
 	}
 
 	@Override
-	public List<Commit> getAllCommits() throws IOException, GitAPIException {
+	public List<Commit> getAllCommits() throws GitAPIException, IOException {
 
 		List<Commit> commits = new ArrayList<>();
 		Iterable<RevCommit> revCommits = git.log().all().call();
@@ -52,7 +46,7 @@ public class GitApiImpl implements GitApi {
 			commits.add(DomainObjectConverter.convertFrom(revCommit));
 		}
 
-		Collections.sort(commits, new Comparator<Commit>() {
+		commits.sort(new Comparator<Commit>() {
 			@Override
 			public int compare(Commit o1, Commit o2) {
 				return o2.getDateTime().compareTo(o1.getDateTime());

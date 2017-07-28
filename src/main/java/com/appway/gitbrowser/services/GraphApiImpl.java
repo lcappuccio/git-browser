@@ -89,7 +89,6 @@ public class GraphApiImpl implements GraphApi {
 	 * Creates indexes with the given IndexManager
 	 *
 	 * @param indexManager
-	 * @return
 	 */
 	private void createIndexes(IndexManager indexManager) {
 		try (Transaction tx = graphDb.beginTx()) {
@@ -124,10 +123,8 @@ public class GraphApiImpl implements GraphApi {
 	 * Insert commit to the database
 	 *
 	 * @param commit
-	 * @throws IOException
-	 * @throws GitAPIException
 	 */
-	private void insertCommit(Commit commit) throws IOException, GitAPIException {
+	private void insertCommit(Commit commit) {
 
 		try (Transaction tx = graphDb.beginTx()) {
 

@@ -16,8 +16,6 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class Main {
@@ -77,11 +75,5 @@ public class Main {
 		System.out.println("\nCommits " + commits);
 
 		repository.close();
-	}
-
-	private static String getCommitDate(int commitTime) throws ParseException {
-
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return simpleDateFormat.format(new Date(commitTime * 1000L));
 	}
 }
