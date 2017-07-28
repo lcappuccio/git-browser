@@ -16,13 +16,13 @@ public interface GitApi {
 	 * @param commit
 	 * @return
 	 */
-	Commit getParentOf(Commit commit) throws IOException, GitAPIException;
+	Commit getParentOf(Commit commit);
 
 	/**
 	 * Return the full commit list
 	 *
 	 * @return
 	 */
-	List<Commit> getAllCommits() throws IOException, GitAPIException;
+	List<Commit> getAllCommits() throws GitAPIException, IOException;
 
 }

@@ -1,6 +1,6 @@
 package com.appway.gitbrowser.services;
 
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.appway.gitbrowser.model.Commit;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface GraphApi {
 	 *
 	 * @return
 	 */
-	List<RevCommit> findAll();
+	List<Commit> findAll();
 
 	/**
 	 * Return a commit given the commit id
@@ -21,7 +21,7 @@ public interface GraphApi {
 	 * @param commitId
 	 * @return
 	 */
-	RevCommit findById(final String commitId);
+	Commit findById(final String commitId);
 
 	/**
 	 * Return a commit list given a specific commitMessage
@@ -29,7 +29,7 @@ public interface GraphApi {
 	 * @param commitMessage
 	 * @return
 	 */
-	List<RevCommit> findCommitsByMessage(String commitMessage);
+	List<Commit> findCommitsByMessage(String commitMessage);
 
 	/**
 	 * Return a commit list that contain the given text in their commit message
@@ -37,6 +37,6 @@ public interface GraphApi {
 	 * @param textToSearch
 	 * @return
 	 */
-	List<RevCommit> findCommitsThatContainMessage(String textToSearch);
+	List<Commit> findCommitsThatContainMessage(String textToSearch);
 
 }

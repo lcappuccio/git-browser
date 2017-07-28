@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.io.File;
+import java.io.IOException;
 
 @SpringBootApplication
 public class Application {
@@ -38,8 +39,8 @@ public class Application {
 	}
 
 	@Bean
-	public GraphApi graphApi() {
-		return new GraphApiImpl(databaseFolder);
+	public GraphApi graphApi() throws GitAPIException, IOException {
+		return new GraphApiImpl(databaseFolder, gitApi());
 	}
 
 	@Bean

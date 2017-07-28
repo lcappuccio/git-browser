@@ -1,6 +1,7 @@
 package com.appway.gitbrowser.services;
 
-import org.eclipse.jgit.revwalk.RevCommit;
+import com.appway.gitbrowser.model.Commit;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -14,6 +15,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,39 +23,65 @@ public class GraphApiImpl implements GraphApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphApiImpl.class);
 
+	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
-	private final RelationshipType parentRelation = RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
+	private final RelationshipType parentRelation = RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString
+			());
 	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 
 	private Index<Node> indexCommitId;
 	private RelationshipIndex indexParent;
 
 	@Autowired
-	public GraphApiImpl(final String dbFolder) {
+	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
+		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
 		createIndexes(indexManager);
 		createSchema();
 		LOGGER.info("Creating database at " + dbFolder);
+
+		// Fill database
+		List<Commit> allCommits = gitApi.getAllCommits();
+		for (Commit commit : allCommits) {
+			// Commit parentCommit = gitApi.getParentOf(commit);
+			insertCommit(commit);
+		}
+
+		LOGGER.info("Added " + allCommits.size() + " commits");
 	}
 
 	@Override
-	public List<RevCommit> findAll() {
+	public List<Commit> findAll() {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public RevCommit findById(String commitId) {
+	public Commit findById(String commitId) {
+		Commit commit = new Commit();
+		LOGGER.info("Find commit id: " + commitId);
+		try (Transaction tx = graphDb.beginTx()) {
+			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commitId).iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node node = nodeIterator.next();
+				String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+
+				commit.setId(nodeCommitId);
+				commit.setMessage(nodeCommitMessage);
+			}
+		}
+		return commit;
+	}
+
+	@Override
+	public List<Commit> findCommitsByMessage(String commitMessage) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public List<RevCommit> findCommitsByMessage(String commitMessage) {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public List<RevCommit> findCommitsThatContainMessage(String textToSearch) {
+	public List<Commit> findCommitsThatContainMessage(String textToSearch) {
 		throw new NotImplementedException();
 	}
 
@@ -61,7 +89,6 @@ public class GraphApiImpl implements GraphApi {
 	 * Creates indexes with the given IndexManager
 	 *
 	 * @param indexManager
-	 * @return
 	 */
 	private void createIndexes(IndexManager indexManager) {
 		try (Transaction tx = graphDb.beginTx()) {
@@ -90,5 +117,34 @@ public class GraphApiImpl implements GraphApi {
 	private void close() {
 		LOGGER.info("close database");
 		graphDb.shutdown();
+	}
+
+	/**
+	 * Insert commit to the database
+	 *
+	 * @param commit
+	 */
+	private void insertCommit(Commit commit) {
+
+		try (Transaction tx = graphDb.beginTx()) {
+
+			Node commitNode = graphDb.createNode();
+			commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
+			commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+
+			try {
+				commitNode.addLabel(constraintCommitLabel);
+			} catch (ConstraintViolationException ex) {
+				String errorMessage = ex.getMessage();
+				tx.failure();
+				LOGGER.error(commit.getId() + ": " + errorMessage);
+				throw new ConstraintViolationException(errorMessage);
+			}
+
+			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
+			// TODO LC add relationship here
+
+			tx.success();
+		}
 	}
 }
