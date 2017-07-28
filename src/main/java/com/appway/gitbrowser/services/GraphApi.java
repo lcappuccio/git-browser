@@ -32,11 +32,11 @@ public interface GraphApi {
 	List<Commit> findCommitsByMessage(String commitMessage);
 
 	/**
-	 * Return a commit list that contain the given text in their commit message
+	 * Find parent commit of a given commit
 	 *
-	 * @param textToSearch
+	 * @param commit
 	 * @return
 	 */
-	List<Commit> findCommitsThatContainMessage(String textToSearch);
+	Commit findParentOf(Commit commit);
 
 }

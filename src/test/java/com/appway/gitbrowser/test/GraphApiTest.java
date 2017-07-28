@@ -53,12 +53,13 @@ public class GraphApiTest {
 
 		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
 
-		assertTrue(commitsByMessage.size() == 5);
-		assertEquals("aa288f8cfc9a54354535a2bab28beb6e874e96ec", commitsByMessage.get(0).getId());
-		assertEquals("365ad45919894c76c1b64536591e6e99d2e846af", commitsByMessage.get(1).getId());
-		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(2).getId());
-		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(3).getId());
-		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage.get(4).getId());
+		assertTrue(commitsByMessage.size() == 6);
+		assertEquals("fb2104ec63f45073e32f5cf650ff8ef280c3c2ba", commitsByMessage.get(0).getId());
+		assertEquals("aa288f8cfc9a54354535a2bab28beb6e874e96ec", commitsByMessage.get(1).getId());
+		assertEquals("365ad45919894c76c1b64536591e6e99d2e846af", commitsByMessage.get(2).getId());
+		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(3).getId());
+		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(4).getId());
+		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage.get(5).getId());
 	}
 
 	@Test
@@ -73,6 +74,30 @@ public class GraphApiTest {
 		assertEquals("repo init", commitsByMessage.get(0).getMessage());
 		assertEquals("2017-07-25 16:25:46",
 				DomainObjectConverter.formatCommitDateTime(commitsByMessage.get(0).getDateTime()));
+	}
+
+	@Test
+	public void should_have_parent() {
+
+		String commitId = "2e93bd8b06b8f51feb86eb6b5a55363e3c99fa17";
+		Commit childCommit = sut.findById(commitId);
+
+		Commit parentCommit = sut.findParentOf(childCommit);
+
+		assertNotNull(parentCommit);
+		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", parentCommit.getId());
+		assertEquals("repo init", parentCommit.getMessage());
+	}
+
+	@Test
+	public void should_have_no_parent() {
+
+		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
+		Commit rootCommit = sut.findById(commitId);
+
+		Commit parentCommit = sut.findParentOf(rootCommit);
+
+		assertEquals(rootCommit, parentCommit);
 	}
 
 	@Test

@@ -2,8 +2,7 @@
 
 # Testing Resources
 
-Add a git repository of your own to the folder specified in
-`repository.folder` of the test `application.properties`.
+Uses own git repository as specified in `repository.folder` of the test `application.properties`.
 
 ## References
 

@@ -11,7 +11,6 @@ import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
@@ -24,6 +23,7 @@ public class GraphApiImpl implements GraphApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphApiImpl.class);
 
+	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
 	private final RelationshipType parentRelation =
 			RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
@@ -34,6 +34,8 @@ public class GraphApiImpl implements GraphApi {
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
+
+		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
 		createIndexes(indexManager);
@@ -45,6 +47,8 @@ public class GraphApiImpl implements GraphApi {
 		for (Commit commit : allCommits) {
 			insertCommit(commit);
 		}
+
+		addRelationships();
 
 		LOGGER.info("Added " + allCommits.size() + " commits");
 	}
@@ -101,8 +105,52 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
-	public List<Commit> findCommitsThatContainMessage(String textToSearch) {
-		throw new NotImplementedException();
+	public Commit findParentOf(Commit commit) {
+
+		// Commit parentOf = gitApi.getParentOf(commit);
+		// return findById(parentOf.getId());
+		LOGGER.info("Find parent commit of: " + commit.getId());
+		Commit parentCommit = null;
+		try (Transaction tx = graphDb.beginTx()) {
+			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId())
+					.iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node commitNode = nodeIterator.next();
+				for (Relationship relationship: commitNode.getRelationships(parentRelation)) {
+					Node startNode = relationship.getEndNode();
+					parentCommit = fromNode(startNode);
+				}
+			}
+		}
+		return parentCommit;
+	}
+
+	/**
+	 * Create the relations between node and its' parent
+	 */
+	private void addRelationships() {
+
+		try (Transaction tx = graphDb.beginTx()) {
+
+			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
+			while (nodeIterator.hasNext()) {
+				Node commitNode = nodeIterator.next();
+				Node parentNode = null;
+				Commit commit = fromNode(commitNode);
+				Commit parentCommit = gitApi.getParentOf(commit);
+				if (parentCommit != null) {
+					Iterator<Node> parentNodeIterator =
+							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
+					if (parentNodeIterator.hasNext()) {
+						parentNode = nodeIterator.next();
+					}
+					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
+					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
+				}
+			}
+			tx.success();
+		}
 	}
 
 	/**
@@ -114,6 +162,7 @@ public class GraphApiImpl implements GraphApi {
 		try (Transaction tx = graphDb.beginTx()) {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
 			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
+			indexParent = indexManager.forRelationships(GraphProperties.COMMIT_PARENT.toString());
 			tx.success();
 		}
 	}
@@ -134,10 +183,21 @@ public class GraphApiImpl implements GraphApi {
 		}
 	}
 
-	@PreDestroy
-	private void close() {
-		LOGGER.info("close database");
-		graphDb.shutdown();
+	/**
+	 * Transform Node object to Commit
+	 *
+	 * @param node
+	 * @return
+	 */
+	private Commit fromNode(Node node) {
+
+		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
+		Long nodeCommitDateTime =
+				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
+		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+
+		return new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
 	}
 
 	/**
@@ -167,19 +227,13 @@ public class GraphApiImpl implements GraphApi {
 			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
 			indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
 
-			// TODO LC add relationship here
-
 			tx.success();
 		}
 	}
 
-	private Commit fromNode(Node node) {
-
-		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
-		Long nodeCommitDateTime =
-				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
-		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
-		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
-		return  new Commit(nodeCommitId, nodeCommitDateTime, nodeCommitAuthor, nodeCommitMessage);
+	@PreDestroy
+	private void close() {
+		LOGGER.info("close database");
+		graphDb.shutdown();
 	}
 }
