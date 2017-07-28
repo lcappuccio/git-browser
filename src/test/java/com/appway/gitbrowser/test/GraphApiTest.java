@@ -28,7 +28,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_a_commit(){
+	public void should_find_a_commit() {
 
 		// first commit in simplexdb
 		String commitId = "22090d7b8466832c153e93444a0f4292d1b377d9";
@@ -37,5 +37,4 @@ public class GraphApiTest {
 
 		assertEquals(commitId, commitById.getId());
 	}
-
 }
