@@ -6,7 +6,6 @@ import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
 import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.graphdb.index.RelationshipIndex;
 import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ public class GraphApiImpl implements GraphApi {
 	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 
 	private Index<Node> indexCommitId, indexCommitMessage;
-	private RelationshipIndex indexParent;
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
@@ -143,8 +141,7 @@ public class GraphApiImpl implements GraphApi {
 					if (parentNodeIterator.hasNext()) {
 						parentNode = nodeIterator.next();
 					}
-					Relationship parentOf = commitNode.createRelationshipTo(parentNode, parentRelation);
-					indexParent.add(parentOf, GraphProperties.COMMIT_PARENT.toString(), commit.getId());
+					commitNode.createRelationshipTo(parentNode, parentRelation);
 				}
 			}
 			tx.success();
@@ -160,7 +157,6 @@ public class GraphApiImpl implements GraphApi {
 		try (Transaction tx = graphDb.beginTx()) {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
 			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
-			indexParent = indexManager.forRelationships(GraphProperties.COMMIT_PARENT.toString());
 			tx.success();
 		}
 	}
