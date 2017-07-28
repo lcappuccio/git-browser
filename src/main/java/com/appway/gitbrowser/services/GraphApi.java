@@ -31,12 +31,4 @@ public interface GraphApi {
 	 */
 	List<Commit> findCommitsByMessage(String commitMessage);
 
-	/**
-	 * Return a commit list that contain the given text in their commit message
-	 *
-	 * @param textToSearch
-	 * @return
-	 */
-	List<Commit> findCommitsThatContainMessage(String textToSearch);
-
 }
