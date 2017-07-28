@@ -21,7 +21,6 @@ public class GitLogContainer {
 		Iterable<RevCommit> refCollection = gitRepository.log().call();
 		for (RevCommit revCommit: refCollection) {
 			revCommitList.put(revCommit.getId().getName(), revCommit);
-			LOGGER.info("Added " + revCommit.getId().getName());
 		}
 		LOGGER.info("Added " + revCommitList.size() + " commits");
 	}

@@ -16,6 +16,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class GraphApiImpl implements GraphApi {
 			());
 	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 
-	private Index<Node> indexCommitId;
+	private Index<Node> indexCommitId, indexCommitMessage;
 	private RelationshipIndex indexParent;
 
 	@Autowired
@@ -77,7 +78,26 @@ public class GraphApiImpl implements GraphApi {
 
 	@Override
 	public List<Commit> findCommitsByMessage(String commitMessage) {
-		throw new NotImplementedException();
+		List<Commit> commitList = new ArrayList<>();
+		LOGGER.info("Find commit message: " + commitMessage);
+		try (Transaction tx = graphDb.beginTx()) {
+			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
+			tx.success();
+			while (nodeIterator.hasNext()) {
+				Node node = nodeIterator.next();
+				String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
+				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
+
+				if (nodeCommitMessage.contains(commitMessage)) {
+					Commit commit = new Commit();
+					commit.setId(nodeCommitId);
+					commit.setMessage(nodeCommitMessage);
+					commitList.add(commit);
+				}
+
+			}
+		}
+		return commitList;
 	}
 
 	@Override
@@ -93,6 +113,7 @@ public class GraphApiImpl implements GraphApi {
 	private void createIndexes(IndexManager indexManager) {
 		try (Transaction tx = graphDb.beginTx()) {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
+			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
 			tx.success();
 		}
 	}
@@ -142,6 +163,8 @@ public class GraphApiImpl implements GraphApi {
 			}
 
 			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
+			indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+
 			// TODO LC add relationship here
 
 			tx.success();
