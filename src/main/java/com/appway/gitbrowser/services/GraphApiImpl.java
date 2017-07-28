@@ -11,6 +11,7 @@ import org.neo4j.graphdb.schema.ConstraintDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
@@ -102,6 +103,12 @@ public class GraphApiImpl implements GraphApi {
 			}
 		}
 		return commitList;
+	}
+
+	@Override
+	public Commit findParentOf(Commit commit) {
+
+		throw new NotImplementedException();
 	}
 
 	/**
