@@ -106,9 +106,7 @@ public class GraphApiImpl implements GraphApi {
 
 	@Override
 	public Commit findParentOf(Commit commit) {
-
-		// Commit parentOf = gitApi.getParentOf(commit);
-		// return findById(parentOf.getId());
+		
 		LOGGER.info("Find parent commit of: " + commit.getId());
 		Commit parentCommit = null;
 		try (Transaction tx = graphDb.beginTx()) {
