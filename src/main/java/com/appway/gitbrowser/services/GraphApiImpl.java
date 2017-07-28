@@ -113,8 +113,9 @@ public class GraphApiImpl implements GraphApi {
 			tx.success();
 			while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
-				for (Relationship relationship : commitNode.getRelationships(parentRelation)) {
-					Node endNode = relationship.getEndNode();
+				Relationship singleRelationship = commitNode.getSingleRelationship(parentRelation, Direction.OUTGOING);
+				if (singleRelationship != null) {
+					Node endNode = singleRelationship.getEndNode();
 					parentCommit = fromNode(endNode);
 				}
 			}
