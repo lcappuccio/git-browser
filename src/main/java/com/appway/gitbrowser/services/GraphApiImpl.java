@@ -139,7 +139,7 @@ public class GraphApiImpl implements GraphApi {
 					Iterator<Node> parentNodeIterator =
 							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
 					if (parentNodeIterator.hasNext()) {
-						Node parentNode = nodeIterator.next();
+						Node parentNode = parentNodeIterator.next();
 						commitNode.createRelationshipTo(parentNode, parentRelation);
 					}
 				}
