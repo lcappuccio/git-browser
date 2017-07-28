@@ -35,7 +35,7 @@ public class Application {
 
 	@Bean
 	public GitApi gitApi() throws GitAPIException {
-		return new GitApiImpl(getGitRepository().getRepository(), gitLogContainer());
+		return new GitApiImpl(gitLogContainer());
 	}
 
 	@Bean

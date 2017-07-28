@@ -45,7 +45,6 @@ public class GraphApiImpl implements GraphApi {
 		// Fill database
 		List<Commit> allCommits = gitApi.getAllCommits();
 		for (Commit commit : allCommits) {
-			// Commit parentCommit = gitApi.getParentOf(commit);
 			insertCommit(commit);
 		}
 
