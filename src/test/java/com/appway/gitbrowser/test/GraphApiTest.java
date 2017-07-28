@@ -34,37 +34,38 @@ public class GraphApiTest {
 	public void should_find_a_commit_by_id() {
 
 		// first commit in simplexdb
-		String commitId = "22090d7b8466832c153e93444a0f4292d1b377d9";
+		String commitId = "aa288f8cfc9a54354535a2bab28beb6e874e96ec";
 
 		Commit commitById = sut.findById(commitId);
 
 		assertEquals(commitId, commitById.getId());
+		assertEquals("code style", commitById.getMessage());
 	}
 
 	@Test
 	public void should_find_a_commit_list_by_message() {
 
-		String messageToFind = "travis";
+		String messageToFind = "style";
 
 		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
 
 		assertTrue(commitsByMessage.size() == 5);
-		assertEquals("73647c69157ac1bdd77001fc3ffb2b6232609bba", commitsByMessage.get(0).getId());
-		assertEquals("484e6253cc7a85a532860bccb1f57d0f3ab7ccbd", commitsByMessage.get(1).getId());
-		assertEquals("3c0a72207401d4e113eb4caadce3de0c8eee42ed", commitsByMessage.get(2).getId());
-		assertEquals("bea5823e343f571bb2373ec0770e5bc9c9675c13", commitsByMessage.get(3).getId());
-		assertEquals("49c8f3932694916e99fb7946725e93349cacb941", commitsByMessage.get(4).getId());
+		assertEquals("aa288f8cfc9a54354535a2bab28beb6e874e96ec", commitsByMessage.get(0).getId());
+		assertEquals("365ad45919894c76c1b64536591e6e99d2e846af", commitsByMessage.get(1).getId());
+		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(2).getId());
+		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(3).getId());
+		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage.get(4).getId());
 	}
 
 	@Test
 	public void should_find_a_commit_by_message() {
 
-		String messageToFind = "add travis build";
+		String messageToFind = "repo init";
 
 		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
 
 		assertTrue(commitsByMessage.size() == 1);
-		assertEquals("49c8f3932694916e99fb7946725e93349cacb941", commitsByMessage.get(0).getId());
-		assertEquals("add travis build", commitsByMessage.get(0).getMessage());
+		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());
+		assertEquals("repo init", commitsByMessage.get(0).getMessage());
 	}
 }
