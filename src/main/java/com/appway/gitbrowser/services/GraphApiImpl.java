@@ -24,10 +24,9 @@ public class GraphApiImpl implements GraphApi {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GraphApiImpl.class);
 
-	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
-	private final RelationshipType parentRelation = RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString
-			());
+	private final RelationshipType parentRelation =
+			RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
 	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 
 	private Index<Node> indexCommitId, indexCommitMessage;
@@ -35,7 +34,6 @@ public class GraphApiImpl implements GraphApi {
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
-		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
 		createIndexes(indexManager);
@@ -144,7 +142,7 @@ public class GraphApiImpl implements GraphApi {
 	 *
 	 * @param commit
 	 */
-	private void insertCommit(Commit commit) {
+	private synchronized void insertCommit(Commit commit) {
 
 		try (Transaction tx = graphDb.beginTx()) {
 
