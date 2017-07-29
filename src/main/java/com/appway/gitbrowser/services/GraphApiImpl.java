@@ -130,9 +130,7 @@ public class GraphApiImpl implements GraphApi {
 
 		try (Transaction tx = graphDb.beginTx()) {
 
-			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
-			while (nodeIterator.hasNext()) {
-				Node commitNode = nodeIterator.next();
+			for (Node commitNode : graphDb.getAllNodes()) {
 				Commit commit = fromNode(commitNode);
 				Commit parentCommit = gitApi.getParentOf(commit);
 				if (parentCommit != null) {
