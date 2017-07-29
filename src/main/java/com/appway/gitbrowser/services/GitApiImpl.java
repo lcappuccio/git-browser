@@ -22,20 +22,6 @@ public class GitApiImpl implements GitApi {
 	}
 
 	@Override
-	public Commit getParentOf(Commit commit) {
-
-		RevCommit revCommit = DomainObjectConverter.convertFrom(commit, gitLogContainer);
-
-		if (revCommit != null && revCommit.getParents().length > 0) {
-			RevCommit parent = revCommit.getParent(0);
-			if (parent != null) {
-				return DomainObjectConverter.convertFrom(parent);
-			}
-		}
-		return null;
-	}
-
-	@Override
 	public List<Commit> getAllCommits() throws GitAPIException, IOException {
 
 		List<Commit> commits = new ArrayList<>();
@@ -53,5 +39,19 @@ public class GitApiImpl implements GitApi {
 			}
 		});
 		return commits;
+	}
+
+	@Override
+	public Commit getParentOf(Commit commit) {
+
+		RevCommit revCommit = DomainObjectConverter.convertFrom(commit, gitLogContainer);
+
+		if (revCommit != null && revCommit.getParents().length > 0) {
+			RevCommit parent = revCommit.getParent(0);
+			if (parent != null) {
+				return DomainObjectConverter.convertFrom(parent);
+			}
+		}
+		return null;
 	}
 }
