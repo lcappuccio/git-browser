@@ -52,7 +52,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_have_no_parent() {
+	public void should_get_no_parent() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
 		Commit rootCommit = graphApi.findById(commitId);
@@ -63,7 +63,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_have_same_parent() {
+	public void should_get_same_parent() {
 
 		String mergeCommitId = "62a458c96ca8c94d2c9d602a183292254e9f81ca";
 		Commit mergeCommit = graphApi.findById(mergeCommitId);
