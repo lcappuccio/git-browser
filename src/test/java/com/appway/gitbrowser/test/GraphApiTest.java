@@ -101,10 +101,26 @@ public class GraphApiTest {
 	}
 
 	@Test
+	public void should_have_same_parent() {
+
+		String mergeCommitId = "62a458c96ca8c94d2c9d602a183292254e9f81ca";
+		Commit mergeCommit = sut.findById(mergeCommitId);
+
+		String branchCommitId = "26ba320111350d5e83d9a0bd8b197bb0db5e431a";
+		Commit branchCommit = sut.findById(branchCommitId);
+
+		Commit parentCommit = sut.findParentOf(mergeCommit);
+		Commit otherParentCommit = sut.findParentOf(branchCommit);
+
+		assertEquals("77e4000472c0d2ff2848aed82ac2c8b563ccfa10", parentCommit.getId());
+		assertEquals(parentCommit, otherParentCommit);
+	}
+
+	@Test
 	public void should_find_all() {
 
 		List<Commit> all = sut.findAll();
 
-		assertTrue(all.size() > 50);
+		assertTrue(all.size() > 100);
 	}
 }
