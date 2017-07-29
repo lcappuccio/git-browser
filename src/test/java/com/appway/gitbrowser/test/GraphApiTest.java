@@ -53,13 +53,14 @@ public class GraphApiTest {
 
 		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
 
-		assertTrue(commitsByMessage.size() == 6);
-		assertEquals("fb2104ec63f45073e32f5cf650ff8ef280c3c2ba", commitsByMessage.get(0).getId());
-		assertEquals("aa288f8cfc9a54354535a2bab28beb6e874e96ec", commitsByMessage.get(1).getId());
-		assertEquals("365ad45919894c76c1b64536591e6e99d2e846af", commitsByMessage.get(2).getId());
-		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(3).getId());
-		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(4).getId());
-		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage.get(5).getId());
+		assertTrue(commitsByMessage.size() > 6);
+		int commitsByMessageSize = commitsByMessage.size();
+		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage
+				.get(commitsByMessageSize - 1).getId());
+		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage
+				.get(commitsByMessageSize - 2).getId());
+		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage
+				.get(commitsByMessageSize - 3).getId());
 	}
 
 	@Test
@@ -97,7 +98,23 @@ public class GraphApiTest {
 
 		Commit parentCommit = sut.findParentOf(rootCommit);
 
-		assertEquals(rootCommit, parentCommit);
+		assertNull(parentCommit);
+	}
+
+	@Test
+	public void should_have_same_parent() {
+
+		String mergeCommitId = "62a458c96ca8c94d2c9d602a183292254e9f81ca";
+		Commit mergeCommit = sut.findById(mergeCommitId);
+
+		String branchCommitId = "26ba320111350d5e83d9a0bd8b197bb0db5e431a";
+		Commit branchCommit = sut.findById(branchCommitId);
+
+		Commit parentCommit = sut.findParentOf(mergeCommit);
+		Commit otherParentCommit = sut.findParentOf(branchCommit);
+
+		assertEquals("77e4000472c0d2ff2848aed82ac2c8b563ccfa10", parentCommit.getId());
+		assertEquals(parentCommit, otherParentCommit);
 	}
 
 	@Test
@@ -105,6 +122,6 @@ public class GraphApiTest {
 
 		List<Commit> all = sut.findAll();
 
-		assertTrue(all.size() > 50);
+		assertTrue(all.size() > 100);
 	}
 }

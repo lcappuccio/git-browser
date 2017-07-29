@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +19,26 @@ public class GitApiImpl implements GitApi {
 	@Autowired
 	public GitApiImpl(GitLogContainer gitLogContainer) {
 		this.gitLogContainer = gitLogContainer;
+	}
+
+	@Override
+	public List<Commit> getAllCommits() throws GitAPIException, IOException {
+
+		List<Commit> commits = new ArrayList<>();
+		Set<String> commitIds = gitLogContainer.getCommitIds();
+		for (String commitId : commitIds) {
+			RevCommit revCommit = gitLogContainer.getRevCommit(commitId);
+			commits.add(DomainObjectConverter.convertFrom(revCommit));
+		}
+
+		commits.sort((o1, o2) -> {
+			if (o2.getDateTime() < o1.getDateTime()) {
+				return -1;
+			} else {
+				return 1;
+			}
+		});
+		return commits;
 	}
 
 	@Override
@@ -34,28 +53,5 @@ public class GitApiImpl implements GitApi {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public List<Commit> getAllCommits() throws GitAPIException, IOException {
-
-		List<Commit> commits = new ArrayList<>();
-		Set<String> commitIds = gitLogContainer.getCommitIds();
-		for (String commitId : commitIds) {
-			RevCommit revCommit = gitLogContainer.getRevCommit(commitId);
-			commits.add(DomainObjectConverter.convertFrom(revCommit));
-		}
-
-		commits.sort(new Comparator<Commit>() {
-			@Override
-			public int compare(Commit o1, Commit o2) {
-				if (o2.getDateTime() < o1.getDateTime()) {
-					return -1;
-				} else {
-					return 1;
-				}
-			}
-		});
-		return commits;
 	}
 }
