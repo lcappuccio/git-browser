@@ -32,7 +32,6 @@ public class GraphApiTest {
 	@Test
 	public void should_find_a_commit_by_id() {
 
-		// first commit in simplexdb
 		String commitId = "aa288f8cfc9a54354535a2bab28beb6e874e96ec";
 
 		Commit commitById = sut.findById(commitId);
