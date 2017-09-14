@@ -48,6 +48,17 @@ public class GitApiTest {
 	}
 
 	@Test
+	public void should_get_parent_as_first_element() {
+
+		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
+		Commit parentCommit = graphApi.findAll().get(0);
+		
+		assertNotNull(parentCommit);
+		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", parentCommit.getId());
+		assertEquals("repo init", parentCommit.getMessage());
+	}
+
+	@Test
 	public void should_get_no_parent() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";

@@ -31,9 +31,9 @@ public class GitApiImpl implements GitApi {
 
 		commits.sort((o1, o2) -> {
 			if (o2.getDateTime() < o1.getDateTime()) {
-				return -1;
-			} else {
 				return 1;
+			} else {
+				return -1;
 			}
 		});
 		return commits;
