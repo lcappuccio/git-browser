@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +29,7 @@ public class GraphApiImpl implements GraphApi {
 	private Index<Node> indexCommitId, indexCommitMessage;
 
 	@Autowired
-	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException {
+	public GraphApiImpl(final String dbFolder, GitApi gitApi) {
 
 		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
@@ -39,15 +38,8 @@ public class GraphApiImpl implements GraphApi {
 		createSchema();
 		LOGGER.info("Creating database at " + dbFolder);
 
-		// Fill database
-		List<Commit> allCommits = gitApi.getAllCommits();
-		for (Commit commit : allCommits) {
-			insertCommit(commit);
-		}
+		insertCommits(gitApi.getAllCommits());
 
-		addRelationships();
-
-		LOGGER.info("Added " + allCommits.size() + " commits");
 	}
 
 	@Override
@@ -123,29 +115,6 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
-	 * Create the relations between node and its' parent
-	 */
-	private void addRelationships() {
-
-		try (Transaction tx = graphDb.beginTx()) {
-
-			for (Node commitNode : graphDb.getAllNodes()) {
-				Commit commit = fromNode(commitNode);
-				Commit parentCommit = gitApi.getParentOf(commit);
-				if (parentCommit != null) {
-					Iterator<Node> parentNodeIterator =
-							indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
-					if (parentNodeIterator.hasNext()) {
-						Node parentNode = parentNodeIterator.next();
-						commitNode.createRelationshipTo(parentNode, parentRelation);
-					}
-				}
-			}
-			tx.success();
-		}
-	}
-
-	/**
 	 * Creates indexes with the given IndexManager
 	 *
 	 * @param indexManager
@@ -194,31 +163,62 @@ public class GraphApiImpl implements GraphApi {
 	/**
 	 * Insert commit to the database
 	 *
-	 * @param commit
+	 * @param commits
 	 */
-	private synchronized void insertCommit(Commit commit) {
+	private void insertCommits(List<Commit> commits) {
 
 		try (Transaction tx = graphDb.beginTx()) {
-
-			Node commitNode = graphDb.createNode();
-			commitNode.setProperty(GraphProperties.COMMIT_AUTHOR.toString(), commit.getAuthor());
-			commitNode.setProperty(GraphProperties.COMMIT_DATETIME.toString(), commit.getDateTime());
-			commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
-			commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
-
-			try {
-				commitNode.addLabel(constraintCommitLabel);
-			} catch (ConstraintViolationException ex) {
-				String errorMessage = ex.getMessage();
-				tx.failure();
-				LOGGER.error(commit.getId() + ": " + errorMessage);
-				throw new ConstraintViolationException(errorMessage);
+			for (Commit commit : commits) {
+				insertCommit(commit);
+				insertRelationship(commit, gitApi.getParentOf(commit));
 			}
-
-			indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
-			indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
-
+			LOGGER.info("Added " + commits.size() + " commits");
 			tx.success();
+		} catch (ConstraintViolationException ex) {
+			String errorMessage = ex.getMessage();
+			LOGGER.error(errorMessage);
+			throw new ConstraintViolationException(errorMessage);
+		}
+	}
+
+	/**
+	 * @param commit
+	 */
+	private void insertCommit(Commit commit) {
+
+		Node commitNode = graphDb.createNode();
+		commitNode.setProperty(GraphProperties.COMMIT_AUTHOR.toString(), commit.getAuthor());
+		commitNode.setProperty(GraphProperties.COMMIT_DATETIME.toString(), commit.getDateTime());
+		commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
+		commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+
+		commitNode.addLabel(constraintCommitLabel);
+
+		indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
+		indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+
+	}
+
+	/**
+	 * Create the relations between node and its' parent
+	 *
+	 * @param commit
+	 * @param parentCommit
+	 */
+	private void insertRelationship(Commit commit, Commit parentCommit) {
+
+		if (parentCommit == null) {
+			return;
+		}
+
+		Iterator<Node> parentNodeIterator =
+				indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
+		Iterator<Node> commitNodeIterator =
+				indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId()).iterator();
+		if (parentNodeIterator.hasNext() && commitNodeIterator.hasNext()) {
+			Node parentNode = parentNodeIterator.next();
+			Node commitNode = commitNodeIterator.next();
+			commitNode.createRelationshipTo(parentNode, parentRelation);
 		}
 	}
 
