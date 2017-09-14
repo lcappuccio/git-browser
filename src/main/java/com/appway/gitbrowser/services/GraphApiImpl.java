@@ -1,7 +1,6 @@
 package com.appway.gitbrowser.services;
 
 import com.appway.gitbrowser.model.Commit;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.graphdb.index.Index;
@@ -31,7 +30,7 @@ public class GraphApiImpl implements GraphApi {
 	private Index<Node> indexCommitId, indexCommitMessage;
 
 	@Autowired
-	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException, GitAPIException {
+	public GraphApiImpl(final String dbFolder, GitApi gitApi) throws IOException {
 
 		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
