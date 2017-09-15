@@ -222,8 +222,6 @@ public class GraphApiImpl implements GraphApi {
 		} else {
 			LOGGER.info("Commit " + commit.getId() + " has no parent");
 		}
-
-
 	}
 
 	@PreDestroy
