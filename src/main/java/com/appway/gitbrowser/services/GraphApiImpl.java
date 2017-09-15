@@ -137,7 +137,6 @@ public class GraphApiImpl implements GraphApi {
 			if (!constraintDefinitionIterator.hasNext()) {
 				graphDb.schema().constraintFor(constraintCommitLabel)
 						.assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString()).create();
-				LOGGER.info("Constraint " + GraphProperties.COMMIT_ID.toString());
 			}
 			tx.success();
 		}
