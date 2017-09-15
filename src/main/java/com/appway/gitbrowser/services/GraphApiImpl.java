@@ -38,7 +38,7 @@ public class GraphApiImpl implements GraphApi {
 		createSchema();
 		LOGGER.info("Creating database at " + dbFolder);
 
-		insertCommits(gitApi.getAllCommits());
+		initializeDatabase(gitApi.getAllCommits());
 
 	}
 
@@ -165,7 +165,7 @@ public class GraphApiImpl implements GraphApi {
 	 *
 	 * @param commits
 	 */
-	private void insertCommits(List<Commit> commits) {
+	private void initializeDatabase(List<Commit> commits) {
 
 		try (Transaction tx = graphDb.beginTx()) {
 			for (Commit commit : commits) {
@@ -182,6 +182,8 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
+	 * Insert a single commit, transaction handling is on client side
+	 *
 	 * @param commit
 	 */
 	private void insertCommit(Commit commit) {
@@ -200,7 +202,7 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
-	 * Create the relations between node and its' parent
+	 * Create the relations between node and its' parent, transaction handling is on client side
 	 *
 	 * @param commit
 	 * @param parentCommit
