@@ -55,8 +55,8 @@ public class GraphApiTest {
 		assertTrue(commitsByMessage.size() > 6);
 		int commitsByMessageSize = commitsByMessage.size();
 		assertEquals("6da65881632b42a49d90dd3afc75f567fb74a058", commitsByMessage.get(0).getId());
-		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(1).getId());
-		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(2).getId());
+		assertEquals("ac59c25a1789b0a0250a1cc8112668bd9d22257a", commitsByMessage.get(1).getId());
+		assertEquals("a2a30ba7ff037c2020fda353bc76fc78531f699d", commitsByMessage.get(2).getId());
 	}
 
 	@Test
