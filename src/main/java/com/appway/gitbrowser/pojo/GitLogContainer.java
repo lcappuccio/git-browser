@@ -23,7 +23,7 @@ public class GitLogContainer {
 		for (RevCommit revCommit: refCollection) {
 			revCommitList.put(revCommit.getId().getName(), revCommit);
 		}
-		LOGGER.info("Added " + revCommitList.size() + " commits");
+		LOGGER.info("Loaded repository with " + revCommitList.size() + " commits");
 	}
 
 	public RevCommit getRevCommit(final String commitId) {
