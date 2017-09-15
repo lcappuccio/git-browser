@@ -161,7 +161,7 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
-	 * Insert commit to the database
+	 * Insert commit to the database in a single database transaction for performance reasons
 	 *
 	 * @param commits
 	 */
