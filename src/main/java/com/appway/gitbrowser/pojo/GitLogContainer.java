@@ -13,24 +13,29 @@ import java.util.Set;
 public class GitLogContainer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitLogContainer.class);
-	private final HashMap<String, RevCommit> revCommitList;
+	private final HashMap<String, RevCommit> revCommitMap;
 
 	@Autowired
 	public GitLogContainer(Git gitRepository) throws GitAPIException {
 
-		revCommitList = new HashMap<>();
+		revCommitMap = new HashMap<>();
 		Iterable<RevCommit> refCollection = gitRepository.log().call();
-		for (RevCommit revCommit: refCollection) {
-			revCommitList.put(revCommit.getId().getName(), revCommit);
+		for (RevCommit revCommit : refCollection) {
+			String revCommitId = revCommit.getId().getName();
+			if (revCommitMap.containsKey(revCommitId)) {
+				throw new IllegalArgumentException("Duplicate commit id");
+			} else {
+				revCommitMap.put(revCommitId, revCommit);
+			}
 		}
-		LOGGER.info("Loaded repository with " + revCommitList.size() + " commits");
+		LOGGER.info("Loaded repository with " + revCommitMap.size() + " commits");
 	}
 
 	public RevCommit getRevCommit(final String commitId) {
-		return revCommitList.get(commitId);
+		return revCommitMap.get(commitId);
 	}
 
 	public Set<String> getCommitIds() {
-		return revCommitList.keySet();
+		return revCommitMap.keySet();
 	}
 }
