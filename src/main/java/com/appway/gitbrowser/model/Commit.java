@@ -1,6 +1,6 @@
 package com.appway.gitbrowser.model;
 
-public class Commit {
+public class Commit implements Comparable<Commit> {
 
 	private String id;
 	private long dateTime;
@@ -69,5 +69,14 @@ public class Commit {
 		result = 31 * result + (author != null ? author.hashCode() : 0);
 		result = 31 * result + (message != null ? message.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public int compareTo(Commit o) {
+		if (this.getDateTime() < o.getDateTime()) {
+			return -1;
+		} else {
+			return 1;
+		}
 	}
 }
