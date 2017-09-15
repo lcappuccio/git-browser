@@ -7,6 +7,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -29,13 +30,7 @@ public class GitApiImpl implements GitApi {
 			commits.add(DomainObjectConverter.convertFrom(revCommit));
 		}
 
-		commits.sort((o1, o2) -> {
-			if (o2.getDateTime() < o1.getDateTime()) {
-				return 1;
-			} else {
-				return -1;
-			}
-		});
+		Collections.sort(commits);
 		return commits;
 	}
 
