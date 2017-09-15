@@ -34,10 +34,10 @@ public class GraphApiImpl implements GraphApi {
 		this.gitApi = gitApi;
 		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
 		IndexManager indexManager = graphDb.index();
+
+		LOGGER.info("Creating database in " + dbFolder);
 		createIndexes(indexManager);
 		createSchema();
-		LOGGER.info("Creating database at " + dbFolder);
-
 		initializeDatabase(gitApi.getAllCommits());
 
 	}
@@ -172,8 +172,8 @@ public class GraphApiImpl implements GraphApi {
 				insertCommit(commit);
 				insertRelationship(commit, gitApi.getParentOf(commit));
 			}
-			LOGGER.info("Added " + commits.size() + " commits");
 			tx.success();
+			LOGGER.info("Created database with " + commits.size() + " commits");
 		} catch (ConstraintViolationException ex) {
 			String errorMessage = ex.getMessage();
 			LOGGER.error(errorMessage);
@@ -209,19 +209,21 @@ public class GraphApiImpl implements GraphApi {
 	 */
 	private void insertRelationship(Commit commit, Commit parentCommit) {
 
-		if (parentCommit == null) {
-			return;
+		if (parentCommit != null) {
+			Iterator<Node> parentNodeIterator =
+					indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
+			Iterator<Node> commitNodeIterator =
+					indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId()).iterator();
+			if (parentNodeIterator.hasNext() && commitNodeIterator.hasNext()) {
+				Node parentNode = parentNodeIterator.next();
+				Node commitNode = commitNodeIterator.next();
+				commitNode.createRelationshipTo(parentNode, parentRelation);
+			}
+		} else {
+			LOGGER.info("Commit " + commit.getId() + " has no parent");
 		}
 
-		Iterator<Node> parentNodeIterator =
-				indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
-		Iterator<Node> commitNodeIterator =
-				indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId()).iterator();
-		if (parentNodeIterator.hasNext() && commitNodeIterator.hasNext()) {
-			Node parentNode = parentNodeIterator.next();
-			Node commitNode = commitNodeIterator.next();
-			commitNode.createRelationshipTo(parentNode, parentRelation);
-		}
+
 	}
 
 	@PreDestroy
