@@ -18,10 +18,10 @@ public class CommitTest {
 
 		Commit commit1 = new Commit(UUID.randomUUID().toString(), System.currentTimeMillis(), "TestAuthor",
 				"TestMessage");
-		Commit commit2 = new Commit(UUID.randomUUID().toString(), System.currentTimeMillis(), "TestAuthor",
+		Commit commit2 = new Commit(UUID.randomUUID().toString(), System.currentTimeMillis() + 100, "TestAuthor",
 				"TestMessage");
 
-		assertTrue(commit2.compareTo(commit1) < 0);
+		assertTrue(commit2.compareTo(commit1) > 0);
 	}
 
 	@Test
