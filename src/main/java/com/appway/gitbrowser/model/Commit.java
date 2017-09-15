@@ -7,9 +7,6 @@ public class Commit implements Comparable<Commit> {
 	private String author;
 	private String message;
 
-	public Commit() {
-	}
-
 	public Commit(String commitId, long commitEpoch, String commitAuthor, String commitMessage) {
 		this.id = commitId;
 		this.dateTime = commitEpoch;
@@ -72,11 +69,12 @@ public class Commit implements Comparable<Commit> {
 	}
 
 	@Override
-	public int compareTo(Commit o) {
-		if (this.getDateTime() < o.getDateTime()) {
-			return -1;
+	public int compareTo(Commit commit) {
+		if (dateTime != commit.getDateTime()) {
+			return Long.compare(dateTime, commit.getDateTime());
 		} else {
-			return 1;
+			return id.compareTo(commit.getId());
 		}
 	}
+
 }
