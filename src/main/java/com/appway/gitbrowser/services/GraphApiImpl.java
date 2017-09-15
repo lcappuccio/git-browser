@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.PreDestroy;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class GraphApiImpl implements GraphApi {
 
 	@Override
 	public Commit findById(String commitId) {
-		Commit commit = new Commit();
+		Commit commit = null;
 		LOGGER.info("Find commit id: " + commitId);
 		try (Transaction tx = graphDb.beginTx()) {
 			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commitId).iterator();
@@ -90,6 +91,8 @@ public class GraphApiImpl implements GraphApi {
 
 			}
 		}
+
+		Collections.sort(commitList);
 		return commitList;
 	}
 
@@ -166,18 +169,13 @@ public class GraphApiImpl implements GraphApi {
 	 */
 	private void initializeDatabase(List<Commit> commits) {
 
-		try (Transaction tx = graphDb.beginTx()) {
-			for (Commit commit : commits) {
-				insertCommit(commit);
-				insertRelationship(commit, gitApi.getParentOf(commit));
-			}
-			tx.success();
-			LOGGER.info("Created database with " + commits.size() + " commits");
-		} catch (ConstraintViolationException ex) {
-			String errorMessage = ex.getMessage();
-			LOGGER.error(errorMessage);
-			throw new ConstraintViolationException(errorMessage);
+		Transaction transaction = graphDb.beginTx();
+		for (Commit commit : commits) {
+			insertCommit(commit);
+			insertRelationship(commit, gitApi.getParentOf(commit));
 		}
+		transaction.success();
+		LOGGER.info("Created database with " + commits.size() + " commits");
 	}
 
 	/**
