@@ -33,12 +33,13 @@ public class CommitControllerTest {
 
 	private GraphApi graphApi;
 	private MockMvc sut;
+	private Commit commit1, commit2;
 
 	@Before
 	public void setSut() {
 		graphApi = mock(GraphApi.class);
-		Commit commit1 = CommitTest.getRandomCommit("TestAuthor", "TestMessage1");
-		Commit commit2 = CommitTest.getRandomCommit("TestAuthor", "TestMessage2");
+		commit1 = CommitTest.getRandomCommit("TestAuthor", "TestMessage1");
+		commit2 = CommitTest.getRandomCommit("TestAuthor", "TestMessage2");
 		List<Commit> commitList = Arrays.asList(commit1, commit2);
 		Mockito.when(graphApi.findAll()).thenReturn(commitList);
 
@@ -57,11 +58,23 @@ public class CommitControllerTest {
 	}
 
 	@Test
+	public void should_find_by_id() throws Exception {
+
+		String commitId = commit1.getId();
+
+		sut.perform(MockMvcRequestBuilders.get("/commit/findbyid/" + commitId)).andExpect(status().is
+				(HttpStatus.OK.value()));
+
+		verify(graphApi).findById(commitId);
+	}
+
+	@Test
 	public void should_find_by_message() throws Exception {
 
-		sut.perform(MockMvcRequestBuilders.get("/commit/findbymessage").param("message", "TestMessage"))
-				.andExpect(status().is(HttpStatus.OK.value()));
 
-		verify(graphApi).findCommitsByMessage("TestMessage");
+		sut.perform(MockMvcRequestBuilders.get("/commit/findbymessage/TestMessage1")).andExpect(status().is
+				(HttpStatus.OK.value()));
+
+		verify(graphApi).findCommitsByMessage("TestMessage1");
 	}
 }
