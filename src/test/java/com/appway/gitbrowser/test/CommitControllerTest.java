@@ -4,12 +4,15 @@ import com.appway.gitbrowser.Application;
 import com.appway.gitbrowser.controller.CommitController;
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.services.GraphApi;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -76,5 +79,25 @@ public class CommitControllerTest {
 				(HttpStatus.OK.value()));
 
 		verify(graphApi).findByMessage("TestMessage1");
+	}
+
+	@Test
+	public void should_find_parent_of() throws Exception {
+
+		String jsonStringFromPerson = jsonStringFromPerson(commit1);
+
+		sut.perform(MockMvcRequestBuilders.put("/commit/findparentof").contentType(MediaType.APPLICATION_JSON)
+				.content(jsonStringFromPerson.getBytes()))
+				.andExpect(status().is(HttpStatus.OK.value()));
+
+		verify(graphApi).findParentOf(commit1);
+	}
+
+	private String jsonStringFromPerson(final Commit commit) throws JsonProcessingException {
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.writeValueAsString(commit);
+
 	}
 }
