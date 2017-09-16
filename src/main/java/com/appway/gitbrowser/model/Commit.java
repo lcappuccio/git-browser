@@ -7,6 +7,8 @@ public class Commit implements Comparable<Commit> {
 	private String author;
 	private String message;
 
+	public Commit() {}
+
 	public Commit(String commitId, long commitEpoch, String commitAuthor, String commitMessage) {
 		this.id = commitId;
 		this.dateTime = commitEpoch;
