@@ -14,12 +14,11 @@ import static junit.framework.TestCase.assertTrue;
 public class CommitTest {
 
 	@Test
-	public void should_sort_by_date() {
+	public void should_sort_by_date() throws InterruptedException {
 
-		Commit commit1 = new Commit(UUID.randomUUID().toString(), System.currentTimeMillis(), "TestAuthor",
-				"TestMessage");
-		Commit commit2 = new Commit(UUID.randomUUID().toString(), System.currentTimeMillis() + 100, "TestAuthor",
-				"TestMessage");
+		Commit commit1 = getRandomCommit("TestAuthor", "TestMessage");
+		Thread.sleep(50);
+		Commit commit2 = getRandomCommit("TestAuthor", "TestMessage");
 
 		assertTrue(commit2.compareTo(commit1) > 0);
 	}
@@ -44,5 +43,10 @@ public class CommitTest {
 		Commit commit2 = new Commit("123", systemTime, "OtherAuthor", "OtherMessage");
 
 		assertEquals(0, commit2.compareTo(commit1));
+	}
+
+	public static Commit getRandomCommit(String commitAuthor, String commitMessage) {
+
+		return new Commit(UUID.randomUUID().toString(), System.currentTimeMillis(), commitAuthor, commitMessage);
 	}
 }
