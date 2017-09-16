@@ -39,6 +39,26 @@
 				"description": ""
 			},
 			"response": []
+		},
+		{
+			"name": "Find parent of",
+			"request": {
+				"url": "http://{{ip}}:{{port}}/commit/findparentof",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"6da65881632b42a49d90dd3afc75f567fb74a058\",\n    \"dateTime\": 1501054056000,\n    \"author\": \"Leonardo Cappuccio\",\n    \"message\": \"code style\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }
