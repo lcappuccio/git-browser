@@ -75,6 +75,6 @@ public class CommitControllerTest {
 		sut.perform(MockMvcRequestBuilders.get("/commit/findbymessage/TestMessage1")).andExpect(status().is
 				(HttpStatus.OK.value()));
 
-		verify(graphApi).findCommitsByMessage("TestMessage1");
+		verify(graphApi).findByMessage("TestMessage1");
 	}
 }

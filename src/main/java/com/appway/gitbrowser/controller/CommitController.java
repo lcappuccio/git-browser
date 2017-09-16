@@ -44,7 +44,7 @@ public class CommitController {
 	@RequestMapping(value = "findbymessage/{message}",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Commit>> findByMessage(@PathVariable("message") final String commitMessage) {
 
-		List<Commit> allCommits = graphApi.findCommitsByMessage(commitMessage);
+		List<Commit> allCommits = graphApi.findByMessage(commitMessage);
 		return new ResponseEntity<>(allCommits, HttpStatus.OK);
 	}
 }

@@ -75,7 +75,7 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
-	public List<Commit> findCommitsByMessage(String commitMessage) {
+	public List<Commit> findByMessage(String commitMessage) {
 		List<Commit> commitList = new ArrayList<>();
 		LOGGER.info("Find commit message: " + commitMessage);
 		try (Transaction tx = graphDb.beginTx()) {
