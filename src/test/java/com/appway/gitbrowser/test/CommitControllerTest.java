@@ -55,4 +55,13 @@ public class CommitControllerTest {
 
 		verify(graphApi).findAll();
 	}
+
+	@Test
+	public void should_find_by_message() throws Exception {
+
+		sut.perform(MockMvcRequestBuilders.get("/commit/findbymessage").param("message", "TestMessage"))
+				.andExpect(status().is(HttpStatus.OK.value()));
+
+		verify(graphApi).findCommitsByMessage("TestMessage");
+	}
 }

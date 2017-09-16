@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,6 +31,13 @@ public class CommitController {
 	public ResponseEntity<List<Commit>> findAll() {
 
 		List<Commit> allCommits = graphApi.findAll();
+		return new ResponseEntity<>(allCommits, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "findbymessage",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Commit>> findByMessage(@RequestParam(value = "message") final String commitMessage) {
+
+		List<Commit> allCommits = graphApi.findCommitsByMessage(commitMessage);
 		return new ResponseEntity<>(allCommits, HttpStatus.OK);
 	}
 }
