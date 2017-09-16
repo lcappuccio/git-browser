@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -51,7 +50,7 @@ public class CommitControllerTest {
 	@Test
 	public void should_find_all() throws Exception {
 
-		ResultActions resultActions = sut.perform(MockMvcRequestBuilders.get("/commit/find"))
+		sut.perform(MockMvcRequestBuilders.get("/commit/findall"))
 				.andExpect(status().is(HttpStatus.OK.value()));
 
 		verify(graphApi).findAll();

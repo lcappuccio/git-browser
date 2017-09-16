@@ -16,7 +16,7 @@ import java.util.List;
  * @author leo 16/09/2017 11:02
  */
 @Controller
-@RequestMapping(value = "/commit")
+@RequestMapping(value = "commit")
 public class CommitController {
 
 	private final GraphApi graphApi;
@@ -26,7 +26,7 @@ public class CommitController {
 		this.graphApi = graphApi;
 	}
 
-	@RequestMapping(value = "/find",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "findall",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Commit>> findAll() {
 
 		List<Commit> allCommits = graphApi.findAll();
