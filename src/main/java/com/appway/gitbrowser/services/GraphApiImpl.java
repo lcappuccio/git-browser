@@ -123,10 +123,11 @@ public class GraphApiImpl implements GraphApi {
 	 * @param indexManager
 	 */
 	private void createIndexes(IndexManager indexManager) {
-		try (Transaction tx = graphDb.beginTx()) {
+		try (Transaction transaction = graphDb.beginTx()) {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
 			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
-			tx.success();
+			transaction.success();
+			transaction.close();
 		}
 	}
 
@@ -134,14 +135,15 @@ public class GraphApiImpl implements GraphApi {
 	 * Creates the database schema and constraints
 	 */
 	private void createSchema() {
-		try (Transaction tx = graphDb.beginTx()) {
+		try (Transaction transaction = graphDb.beginTx()) {
 			Iterator<ConstraintDefinition> constraintDefinitionIterator =
 					graphDb.schema().getConstraints(constraintCommitLabel).iterator();
 			if (!constraintDefinitionIterator.hasNext()) {
 				graphDb.schema().constraintFor(constraintCommitLabel)
 						.assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString()).create();
 			}
-			tx.success();
+			transaction.success();
+			transaction.close();
 		}
 	}
 
@@ -175,6 +177,7 @@ public class GraphApiImpl implements GraphApi {
 			insertRelationship(commit, gitApi.getParentOf(commit));
 		}
 		transaction.success();
+		transaction.close();
 		LOGGER.info("Created database with " + commits.size() + " commits");
 	}
 
