@@ -50,7 +50,7 @@ public class GraphApiTest {
 
 		String messageToFind = "style";
 
-		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
+		List<Commit> commitsByMessage = sut.findByMessage(messageToFind);
 
 		assertTrue(commitsByMessage.size() > 6);
 		int commitsByMessageSize = commitsByMessage.size();
@@ -64,7 +64,7 @@ public class GraphApiTest {
 
 		String messageToFind = "repo init";
 
-		List<Commit> commitsByMessage = sut.findCommitsByMessage(messageToFind);
+		List<Commit> commitsByMessage = sut.findByMessage(messageToFind);
 
 		assertTrue(commitsByMessage.size() == 1);
 		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());

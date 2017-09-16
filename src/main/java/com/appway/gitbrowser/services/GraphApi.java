@@ -29,7 +29,7 @@ public interface GraphApi {
 	 * @param commitMessage
 	 * @return
 	 */
-	List<Commit> findCommitsByMessage(String commitMessage);
+	List<Commit> findByMessage(String commitMessage);
 
 	/**
 	 * Find parent commit of a given commit
