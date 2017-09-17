@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -29,29 +26,28 @@ public class CommitController {
 		this.graphApi = graphApi;
 	}
 
-	@RequestMapping(value = "findall", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "findall", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Commit>> findAll() {
 
 		List<Commit> allCommits = graphApi.findAll();
 		return new ResponseEntity<>(allCommits, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "findbyid/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "findbyid/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Commit> findById(@PathVariable(value = "id") final String commitId) {
 
 		Commit commit = graphApi.findById(commitId);
 		return new ResponseEntity<>(commit, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "findbymessage/{message}", method = RequestMethod.GET,
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "findbymessage/{message}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<Commit>> findByMessage(@PathVariable("message") final String commitMessage) {
 
 		List<Commit> allCommits = graphApi.findByMessage(commitMessage);
 		return new ResponseEntity<>(allCommits, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "findparentof", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PutMapping(value = "findparentof", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Commit> findParentOf(@RequestBody @Valid final Commit commit) {
 
 		Commit parent = graphApi.findParentOf(commit);
