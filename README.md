@@ -2,7 +2,9 @@
 
 # Testing Resources
 
-Uses own git repository as specified in `repository.folder` of the test `application.properties`.
+* Uses own git repository as specified in `repository.folder` of the test `application.properties`.
+* Enclosed Postman collection
+
 
 ## References
 
