@@ -87,6 +87,19 @@ public class GraphApiTest {
 	}
 
 	@Test
+	public void should_have_parent_not_in_branch() {
+
+		String commitId = "c36e5f04e5a9b5d466097d0afa8aa14a2aab532b";
+		Commit childCommit = sut.findById(commitId);
+
+		Commit parentCommit = sut.findParentOf(childCommit);
+
+		assertNotNull(parentCommit);
+		assertEquals("dd7e3a8c7494a09e4f8f5d568aaf1f402f4775c5", parentCommit.getId());
+		assertEquals("fix test", parentCommit.getMessage());
+	}
+
+	@Test
 	public void should_have_no_parent() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
@@ -119,5 +132,13 @@ public class GraphApiTest {
 		List<Commit> all = sut.findAll();
 
 		assertTrue(all.size() > 100);
+	}
+
+	@Test
+	public void should_find_all_parents() {
+
+		Commit commit1 = sut.findById("9ad0dcf070c93300ac90a120c6fbac281c70f2c9");
+		Commit commit2 = sut.findById("c0095c91119c94da4a0a2080855ec2e56c64bd0c");
+		sut.findCommonParentsOf(commit1, commit2);
 	}
 }

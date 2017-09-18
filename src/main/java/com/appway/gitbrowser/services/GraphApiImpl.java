@@ -97,6 +97,33 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	@Override
+	public List<Commit> findCommonParentsOf(Commit commit1, Commit commit2) {
+
+		List<Commit> commonCommits = new ArrayList<>();
+		Commit parentOfCommit1 = findParentOf(commit1);
+		commonCommits.add(parentOfCommit1);
+
+		while(parentOfCommit1 != null) {
+			parentOfCommit1 = findParentOf(parentOfCommit1);
+			commonCommits.add(parentOfCommit1);
+		}
+
+		List<Commit> parentCommit2List = new ArrayList<>();
+		Commit parentOfCommit2 = findParentOf(commit2);
+		parentCommit2List.add(parentOfCommit2);
+
+		while(parentOfCommit2 != null) {
+			parentOfCommit2 = findParentOf(parentOfCommit2);
+			parentCommit2List.add(parentOfCommit2);
+		}
+
+		commonCommits.retainAll(parentCommit2List);
+
+		return commonCommits;
+
+	}
+
+	@Override
 	public Commit findParentOf(Commit commit) {
 
 		LOGGER.info("Find parent commit of: " + commit.getId());

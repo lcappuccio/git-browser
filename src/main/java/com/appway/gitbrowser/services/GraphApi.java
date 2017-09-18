@@ -32,6 +32,15 @@ public interface GraphApi {
 	List<Commit> findByMessage(String commitMessage);
 
 	/**
+	 * Find common parent of two given commits
+	 *
+	 * @param commit1
+	 * @param commit2
+	 * @return
+	 */
+	List<Commit> findCommonParentsOf(Commit commit1, Commit commit2);
+
+	/**
 	 * Find parent commit of a given commit
 	 *
 	 * @param commit
