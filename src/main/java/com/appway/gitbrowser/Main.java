@@ -15,12 +15,11 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 public class Main {
 
-	public static void main(String[] args) throws IOException, GitAPIException, ParseException {
+	public static void main(String[] args) throws IOException, GitAPIException {
 
 		Integer commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();

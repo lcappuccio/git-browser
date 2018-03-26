@@ -23,7 +23,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
@@ -77,7 +76,7 @@ public class TestRepoCreator {
 	}
 
 	@Test
-	public void should_create_domain_object() throws IOException, GitAPIException, ParseException {
+	public void should_create_domain_object() throws IOException, GitAPIException {
 
 		commitFile();
 		Iterable<RevCommit> revCommits = git.log().call();

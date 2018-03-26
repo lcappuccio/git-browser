@@ -17,7 +17,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 
 @SpringBootApplication
@@ -44,7 +43,7 @@ public class Application {
 	}
 
 	@Bean
-	public GraphApi graphApi() throws GitAPIException, IOException {
+	public GraphApi graphApi() throws GitAPIException {
 		return new GraphApiImpl(databaseFolder, gitApi());
 	}
 
