@@ -2,12 +2,14 @@ package com.appway.gitbrowser.controller;
 
 import com.appway.gitbrowser.model.Commit;
 import com.appway.gitbrowser.services.GraphApi;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "commit")
+@EnableSwagger2
+@Api(description = "Git Browser REST API")
 public class CommitController {
 
 	private final GraphApi graphApi;
