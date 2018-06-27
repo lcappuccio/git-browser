@@ -154,7 +154,6 @@ public class GraphApiImpl implements GraphApi {
 			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
 			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
 			transaction.success();
-			transaction.close();
 		}
 	}
 
@@ -170,7 +169,6 @@ public class GraphApiImpl implements GraphApi {
 						.assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString()).create();
 			}
 			transaction.success();
-			transaction.close();
 		}
 	}
 
