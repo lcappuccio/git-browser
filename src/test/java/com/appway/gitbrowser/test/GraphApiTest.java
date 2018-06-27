@@ -66,7 +66,7 @@ public class GraphApiTest {
 
 		List<Commit> commitsByMessage = sut.findByMessage(messageToFind);
 
-		assertTrue(commitsByMessage.size() == 1);
+		assertEquals(1, commitsByMessage.size());
 		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());
 		assertEquals("repo init", commitsByMessage.get(0).getMessage());
 		assertEquals("2017-07-25 16:25:46",
