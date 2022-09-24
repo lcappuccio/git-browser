@@ -3,7 +3,7 @@ name: Neo4J for Git
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
