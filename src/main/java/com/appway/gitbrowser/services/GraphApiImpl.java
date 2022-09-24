@@ -1,21 +1,22 @@
 package com.appway.gitbrowser.services;
 
 import com.appway.gitbrowser.model.Commit;
+import org.neo4j.dbms.api.DatabaseManagementService;
+import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.*;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.graphdb.index.Index;
-import org.neo4j.graphdb.index.IndexManager;
-import org.neo4j.graphdb.schema.ConstraintDefinition;
+import org.neo4j.graphdb.schema.IndexDefinition;
+import org.neo4j.graphdb.schema.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class GraphApiImpl implements GraphApi {
 
@@ -23,21 +24,31 @@ public class GraphApiImpl implements GraphApi {
 
 	private final GitApi gitApi;
 	private final GraphDatabaseService graphDb;
+    private final DatabaseManagementService databaseManagementService;
+
 	private final RelationshipType parentRelation =
 			RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
-	private final Label constraintCommitLabel = Label.label(GraphProperties.COMMIT_ID.toString());
+	private final Label graphCommitIdLabel = Label.label(GraphProperties.COMMIT_ID.toString());
+	private final Label graphCommitMessageLabel = Label.label(GraphProperties.COMMIT_MESSAGE.toString());
 
-	private Index<Node> indexCommitId, indexCommitMessage;
+    private IndexDefinition indexCommitId;
+    private IndexDefinition indexCommitMessage;
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) {
 
 		this.gitApi = gitApi;
-		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(dbFolder));
-		IndexManager indexManager = graphDb.index();
 
-		LOGGER.info("Creating database in " + dbFolder);
-		createIndexes(indexManager);
+        final File databaseFile = new File(dbFolder);
+        final Path databasePath = databaseFile.toPath();
+        final DatabaseManagementServiceBuilder databaseManagementServiceBuilder =
+                new DatabaseManagementServiceBuilder(databasePath);
+        databaseManagementService = databaseManagementServiceBuilder.build();
+        databaseManagementService.createDatabase("GitDatabase");
+        graphDb = databaseManagementService.database("GitDatabase");
+
+        LOGGER.info("Creating database in {}", dbFolder);
+		createIndexes();
 		createSchema();
 		initializeDatabase(gitApi.getAllCommits());
 
@@ -48,9 +59,9 @@ public class GraphApiImpl implements GraphApi {
 
 		List<Commit> allCommits = new ArrayList<>();
 		LOGGER.info("Find all");
-		try (Transaction tx = graphDb.beginTx()) {
-			ResourceIterator<Node> nodeResourceIterator = graphDb.getAllNodes().iterator();
-			tx.success();
+		try (Transaction transaction = graphDb.beginTx()) {
+            final ResourceIterator<Node> nodeResourceIterator = transaction.getAllNodes().iterator();
+			transaction.commit();
 			while (nodeResourceIterator.hasNext()) {
 				Node node = nodeResourceIterator.next();
 				allCommits.add(fromNode(node));
@@ -62,12 +73,13 @@ public class GraphApiImpl implements GraphApi {
 	@Override
 	public Commit findById(String commitId) {
 		Commit commit = null;
-		LOGGER.info("Find commit id: " + commitId);
-		try (Transaction tx = graphDb.beginTx()) {
-			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commitId).iterator();
-			tx.success();
-			while (nodeIterator.hasNext()) {
-				Node node = nodeIterator.next();
+		LOGGER.info("Find commit id {}", commitId);
+		try (Transaction transaction = graphDb.beginTx()) {
+            final ResourceIterator<Node> nodeResourceIterator = transaction.findNodes(graphCommitIdLabel,
+                    GraphProperties.COMMIT_ID.toString(), commit);
+			transaction.commit();
+			while (nodeResourceIterator.hasNext()) {
+				Node node = nodeResourceIterator.next();
 				commit = fromNode(node);
 			}
 		}
@@ -77,18 +89,18 @@ public class GraphApiImpl implements GraphApi {
 	@Override
 	public List<Commit> findByMessage(String commitMessage) {
 		List<Commit> commitList = new ArrayList<>();
-		LOGGER.info("Find commit message: " + commitMessage);
-		try (Transaction tx = graphDb.beginTx()) {
-			Iterator<Node> nodeIterator = graphDb.getAllNodes().iterator();
-			tx.success();
-			while (nodeIterator.hasNext()) {
-				Node node = nodeIterator.next();
+		LOGGER.info("Find commit message {}", commitMessage);
+		try (Transaction transaction = graphDb.beginTx()) {
+            final ResourceIterator<Node> nodeResourceIterator = transaction.findNodes(graphCommitMessageLabel,
+                    GraphProperties.COMMIT_MESSAGE.toString(), commitMessage);
+            transaction.commit();
+			while (nodeResourceIterator.hasNext()) {
+				Node node = nodeResourceIterator.next();
 				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
 
 				if (nodeCommitMessage.contains(commitMessage)) {
 					commitList.add(fromNode(node));
 				}
-
 			}
 		}
 
@@ -128,11 +140,15 @@ public class GraphApiImpl implements GraphApi {
 
 		LOGGER.info("Find parent commit of: " + commit.getId());
 		Commit parentCommit = null;
-		try (Transaction tx = graphDb.beginTx()) {
-			Iterator<Node> nodeIterator = indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId())
-					.iterator();
-			tx.success();
-			while (nodeIterator.hasNext()) {
+		try (Transaction transaction = graphDb.beginTx()) {
+
+            final ResourceIterator<Node> nodeIterator = transaction.findNodes(
+                    graphCommitIdLabel,
+                    GraphProperties.COMMIT_ID.toString(),
+                    commit.getId());
+            transaction.commit();
+
+            while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
 				Relationship singleRelationship = commitNode.getSingleRelationship(parentRelation, Direction.OUTGOING);
 				if (singleRelationship != null) {
@@ -147,13 +163,21 @@ public class GraphApiImpl implements GraphApi {
 	/**
 	 * Creates indexes with the given IndexManager
 	 *
-	 * @param indexManager
 	 */
-	private void createIndexes(IndexManager indexManager) {
+	private void createIndexes() {
 		try (Transaction transaction = graphDb.beginTx()) {
-			indexCommitId = indexManager.forNodes(GraphProperties.COMMIT_ID.toString());
-			indexCommitMessage = indexManager.forNodes(GraphProperties.COMMIT_MESSAGE.toString());
-			transaction.success();
+            final Schema schema = transaction.schema();
+            indexCommitId = schema
+                    .indexFor(graphCommitIdLabel)
+                    .on(GraphProperties.COMMIT_ID.toString())
+                    .create();
+            indexCommitMessage = schema
+                    .indexFor(graphCommitMessageLabel)
+                    .on(GraphProperties.COMMIT_MESSAGE.toString())
+                    .create();
+			transaction.commit();
+            schema.awaitIndexOnline( indexCommitId, 10, TimeUnit.SECONDS );
+            schema.awaitIndexOnline( indexCommitMessage, 10, TimeUnit.SECONDS );
 		}
 	}
 
@@ -162,13 +186,11 @@ public class GraphApiImpl implements GraphApi {
 	 */
 	private void createSchema() {
 		try (Transaction transaction = graphDb.beginTx()) {
-			Iterator<ConstraintDefinition> constraintDefinitionIterator =
-					graphDb.schema().getConstraints(constraintCommitLabel).iterator();
-			if (!constraintDefinitionIterator.hasNext()) {
-				graphDb.schema().constraintFor(constraintCommitLabel)
-						.assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString()).create();
-			}
-			transaction.success();
+            transaction.schema()
+                    .constraintFor(graphCommitIdLabel)
+                    .assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString())
+                    .create();
+            transaction.commit();
 		}
 	}
 
@@ -201,7 +223,7 @@ public class GraphApiImpl implements GraphApi {
 			insertCommit(commit);
 			insertRelationship(commit, gitApi.getParentOf(commit));
 		}
-		transaction.success();
+		transaction.commit();
 		transaction.close();
 		LOGGER.info("Created database with " + commits.size() + " commits");
 	}
@@ -212,18 +234,19 @@ public class GraphApiImpl implements GraphApi {
 	 * @param commit
 	 */
 	private void insertCommit(Commit commit) {
-
-		Node commitNode = graphDb.createNode();
-		commitNode.setProperty(GraphProperties.COMMIT_AUTHOR.toString(), commit.getAuthor());
-		commitNode.setProperty(GraphProperties.COMMIT_DATETIME.toString(), commit.getDateTime());
-		commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
-		commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
-
-		commitNode.addLabel(constraintCommitLabel);
-
-		indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
-		indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
-
+        try(Transaction transaction = graphDb.beginTx()) {
+            Node commitNode = transaction.createNode();
+            commitNode.setProperty(GraphProperties.COMMIT_AUTHOR.toString(), commit.getAuthor());
+            commitNode.setProperty(GraphProperties.COMMIT_DATETIME.toString(), commit.getDateTime());
+            commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
+            commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+            commitNode.addLabel(graphCommitIdLabel);
+            transaction.commit();
+            /*
+            indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
+            indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
+             */
+        }
 	}
 
 	/**
@@ -233,25 +256,22 @@ public class GraphApiImpl implements GraphApi {
 	 * @param parentCommit
 	 */
 	private void insertRelationship(Commit commit, Commit parentCommit) {
-
-		if (parentCommit != null) {
-			Iterator<Node> parentNodeIterator =
-					indexCommitId.get(GraphProperties.COMMIT_ID.toString(), parentCommit.getId()).iterator();
-			Iterator<Node> commitNodeIterator =
-					indexCommitId.get(GraphProperties.COMMIT_ID.toString(), commit.getId()).iterator();
-			if (parentNodeIterator.hasNext() && commitNodeIterator.hasNext()) {
-				Node parentNode = parentNodeIterator.next();
-				Node commitNode = commitNodeIterator.next();
-				commitNode.createRelationshipTo(parentNode, parentRelation);
-			}
-		} else {
-			LOGGER.info("Commit " + commit.getId() + " has no parent");
-		}
+        try(Transaction transaction = graphDb.beginTx()) {
+            if (parentCommit != null) {
+                Node childNode = transaction.findNode(graphCommitIdLabel,
+                        GraphProperties.COMMIT_ID.toString(), commit.getId());
+                Node parentNode = transaction.findNode(graphCommitIdLabel,
+                        GraphProperties.COMMIT_ID.toString(), parentCommit.getId());
+                childNode.createRelationshipTo(parentNode, parentRelation);
+            } else {
+                LOGGER.info("Commit {} has no parent", commit.getId());
+            }
+        }
 	}
 
 	@PreDestroy
 	private void close() {
 		LOGGER.info("close database");
-		graphDb.shutdown();
+		databaseManagementService.shutdown();
 	}
 }

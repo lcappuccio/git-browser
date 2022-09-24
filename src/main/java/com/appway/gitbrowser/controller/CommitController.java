@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "commit")
-@EnableSwagger2
+@EnableSwagger2WebMvc
 @Api(description = "Git Browser REST API")
 public class CommitController {
 
@@ -52,7 +52,7 @@ public class CommitController {
 	}
 
 	@PutMapping(value = "findparentof", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Commit> findParentOf(@RequestBody @Valid final Commit commit) {
+	public ResponseEntity<Commit> findParentOf(@RequestBody @Validated final Commit commit) {
 
 		Commit parent = graphApi.findParentOf(commit);
 		return new ResponseEntity<>(parent, HttpStatus.OK);
