@@ -1,5 +1,10 @@
 # GitBrowser
 
+Neo4J database with REST API backend to perform searches in git repositories.
+
+Requirements:
+* Java 11 (pending Neo4J 5.0 for JDK17)
+
 # Testing Resources
 
 * Uses own git repository as specified in `repository.folder` of the test `application.properties`.
