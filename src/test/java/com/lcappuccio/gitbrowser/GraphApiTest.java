@@ -40,7 +40,7 @@ public class GraphApiTest {
 		assertFalse(commitById.getMessage().isEmpty());
 		assertNotEquals(0, commitById.getDateTime());
 		assertEquals("code style", commitById.getMessage());
-		assertEquals("2017-07-28 10:49:03",
+		assertEquals("2017-07-28 08:49:03",
 				DomainObjectConverter.formatCommitDateTime(commitById.getDateTime()));
 	}
 
@@ -68,7 +68,7 @@ public class GraphApiTest {
 		assertEquals(1, commitsByMessage.size());
 		assertEquals("c62b0e17dbede79ceca1d2b69399f8045692574b", commitsByMessage.get(0).getId());
 		assertEquals("repo init", commitsByMessage.get(0).getMessage());
-		assertEquals("2017-07-25 16:25:46",
+		assertEquals("2017-07-25 14:25:46",
 				DomainObjectConverter.formatCommitDateTime(commitsByMessage.get(0).getDateTime()));
 	}
 

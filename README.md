@@ -9,7 +9,7 @@ Requirements:
 
 * Uses own git repository as specified in `repository.folder` of the test `application.properties`.
 * Enclosed Postman collection
-* Swagger documentation http://localhost:8080/swagger-ui.html
+* Swagger documentation http://localhost:8080/swagger-ui.html (**DISABLED**)
 
 ## References
 

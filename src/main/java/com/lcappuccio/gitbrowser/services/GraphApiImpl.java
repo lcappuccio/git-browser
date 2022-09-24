@@ -168,21 +168,6 @@ public class GraphApiImpl implements GraphApi {
                     .on(GraphProperties.COMMIT_MESSAGE.toString())
                     .withName(GraphProperties.COMMIT_MESSAGE.toString())
                     .create();
-            //schema.awaitIndexOnline( indexCommitId, 10, TimeUnit.SECONDS );
-            //schema.awaitIndexOnline( indexCommitMessage, 10, TimeUnit.SECONDS );
-            transaction.commit();
-		}
-	}
-
-	/**
-	 * Creates the database schema and constraints
-	 */
-	private void createSchema() {
-		try (Transaction transaction = graphDb.beginTx()) {
-            transaction.schema()
-                    .constraintFor(graphCommitIdLabel)
-                    .assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString())
-                    .create();
             transaction.commit();
 		}
 	}
@@ -196,7 +181,7 @@ public class GraphApiImpl implements GraphApi {
 	private Commit fromNode(Node node) {
 
 		String nodeCommitAuthor = node.getProperty(GraphProperties.COMMIT_AUTHOR.toString()).toString();
-		Long nodeCommitDateTime =
+		long nodeCommitDateTime =
 				Long.parseLong(node.getProperty(GraphProperties.COMMIT_DATETIME.toString()).toString());
 		String nodeCommitId = node.getProperty(GraphProperties.COMMIT_ID.toString()).toString();
 		String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
@@ -236,15 +221,11 @@ public class GraphApiImpl implements GraphApi {
             commitNode.addLabel(graphCommitIdLabel);
             commitNode.addLabel(graphCommitMessageLabel);
             transaction.commit();
-            /*
-            indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
-            indexCommitMessage.add(commitNode, GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
-             */
         }
 	}
 
 	/**
-	 * Create the relations between node and its' parent, transaction handling is on client side
+	 * Create the relations between node and its parent, transaction handling is on client side
 	 *
 	 * @param commit
 	 * @param parentCommit

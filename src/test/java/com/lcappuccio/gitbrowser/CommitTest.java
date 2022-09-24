@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 15/09/2017 15:07
@@ -21,6 +20,8 @@ public class CommitTest {
 		Commit commit2 = getRandomCommit("TestAuthor", "TestMessage");
 
 		assertTrue(commit2.compareTo(commit1) > 0);
+        assertNotEquals(commit1, commit2);
+        assertNotEquals(commit1.hashCode(), commit2.hashCode());
 	}
 
 	@Test
@@ -32,6 +33,8 @@ public class CommitTest {
 		Commit commit2 = new Commit("456", systemTime, "TestAuthor", "TestMessage");
 
 		assertTrue(commit2.compareTo(commit1) > 0);
+        assertNotEquals(commit1, commit2);
+        assertNotEquals(commit1.hashCode(), commit2.hashCode());
 	}
 
 	@Test
@@ -43,6 +46,8 @@ public class CommitTest {
 		Commit commit2 = new Commit("123", systemTime, "OtherAuthor", "OtherMessage");
 
 		assertEquals(0, commit2.compareTo(commit1));
+        assertNotEquals(commit1, commit2);
+        assertNotEquals(commit1.hashCode(), commit2.hashCode());
 	}
 
 	public static Commit getRandomCommit(String commitAuthor, String commitMessage) {

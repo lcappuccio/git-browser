@@ -4,6 +4,7 @@ import com.lcappuccio.gitbrowser.model.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class DomainObjectConverter {
 
@@ -34,6 +35,7 @@ public class DomainObjectConverter {
 	public static String formatCommitDateTime(long commitDateTime) {
 
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return simpleDateFormat.format(commitDateTime);
 	}
 }

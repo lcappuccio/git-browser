@@ -11,13 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 import java.io.File;
-import java.util.Collections;
 
 @SpringBootApplication
 public class Application {
@@ -50,20 +45,5 @@ public class Application {
 	@Bean
 	public Git getGitRepository() throws GitAPIException {
 		return Git.init().setDirectory(new File(repositoryFolder)).call();
-	}
-
-	@Bean
-	public Docket restfulApi() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("restful-api").select().build().apiInfo(apiInfo());
-	}
-
-	private ApiInfo apiInfo() {
-		return new ApiInfo(
-				"GitBrowser",
-				"Exposing a Git repo through REST API",
-				null,
-				null,
-				new Contact("Leonardo Cappuccio", null, null), null, null, Collections.emptyList());
 	}
 }
