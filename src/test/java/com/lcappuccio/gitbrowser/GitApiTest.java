@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
-public class GitApiTest {
+class GitApiTest {
 
 	@Autowired
 	private GitApi sut;
@@ -25,7 +25,7 @@ public class GitApiTest {
 	private GraphApi graphApi;
 
 	@Test
-	public void should_get_all() {
+	void should_get_all() {
 
 		List<Commit> allCommits = sut.getAllCommits();
 
@@ -33,7 +33,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_get_parent() {
+	void should_get_parent() {
 
 		String commitId = "2e93bd8b06b8f51feb86eb6b5a55363e3c99fa17";
 		Commit childCommit = graphApi.findById(commitId);
@@ -46,7 +46,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_get_parent_as_first_element() {
+	void should_get_parent_as_first_element() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
 		Commit parentCommit = graphApi.findAll().get(0);
@@ -57,7 +57,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_get_no_parent() {
+	void should_get_no_parent() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
 		Commit rootCommit = graphApi.findById(commitId);
@@ -68,7 +68,7 @@ public class GitApiTest {
 	}
 
 	@Test
-	public void should_get_same_parent() {
+	void should_get_same_parent() {
 
 		String mergeCommitId = "62a458c96ca8c94d2c9d602a183292254e9f81ca";
 		Commit mergeCommit = graphApi.findById(mergeCommitId);

@@ -17,19 +17,19 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
-public class GraphApiTest {
+class GraphApiTest {
 
 	@Autowired
 	private GraphApi sut;
 
 	@Test
-	public void should_have_graph_api() {
+	void should_have_graph_api() {
 
 		assertNotNull(sut);
 	}
 
 	@Test
-	public void should_find_a_commit_by_id() {
+	void should_find_a_commit_by_id() {
 
 		String commitId = "aa288f8cfc9a54354535a2bab28beb6e874e96ec";
 
@@ -45,7 +45,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_a_commit_list_by_message() {
+	void should_find_a_commit_list_by_message() {
 
 		String messageToFind = "style";
 
@@ -59,7 +59,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_a_commit_by_message() {
+	void should_find_a_commit_by_message() {
 
 		String messageToFind = "repo init";
 
@@ -73,7 +73,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_have_parent() {
+	void should_have_parent() {
 
 		String commitId = "2e93bd8b06b8f51feb86eb6b5a55363e3c99fa17";
 		Commit childCommit = sut.findById(commitId);
@@ -86,7 +86,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_have_parent_not_in_branch() {
+	void should_have_parent_not_in_branch() {
 
 		String commitId = "c36e5f04e5a9b5d466097d0afa8aa14a2aab532b";
 		Commit childCommit = sut.findById(commitId);
@@ -99,7 +99,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_have_no_parent() {
+	void should_have_no_parent() {
 
 		String commitId = "c62b0e17dbede79ceca1d2b69399f8045692574b";
 		Commit rootCommit = sut.findById(commitId);
@@ -110,7 +110,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_have_same_parent() {
+	void should_have_same_parent() {
 
 		String mergeCommitId = "62a458c96ca8c94d2c9d602a183292254e9f81ca";
 		Commit mergeCommit = sut.findById(mergeCommitId);
@@ -126,7 +126,7 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_all() {
+	void should_find_all() {
 
 		List<Commit> all = sut.findAll();
 
@@ -134,10 +134,13 @@ public class GraphApiTest {
 	}
 
 	@Test
-	public void should_find_all_parents() {
+	void should_find_all_parents() {
 
 		Commit commit1 = sut.findById("9ad0dcf070c93300ac90a120c6fbac281c70f2c9");
 		Commit commit2 = sut.findById("c0095c91119c94da4a0a2080855ec2e56c64bd0c");
-		sut.findCommonParentsOf(commit1, commit2);
-	}
+
+        List<Commit> commonParentsOf = sut.findCommonParentsOf(commit1, commit2);
+
+        assertTrue(commonParentsOf.size() > 0);
+    }
 }

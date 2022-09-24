@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
-public class RepoCreatorTest {
+class RepoCreatorTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(RepoCreatorTest.class);
 
@@ -39,12 +39,12 @@ public class RepoCreatorTest {
 	private Git git;
 	private Repository repository;
 
-	public Repository getRepository() {
+	Repository getRepository() {
 		return repository;
 	}
 
 	@BeforeEach
-	public void setUp() throws IOException, GitAPIException {
+	void setUp() throws IOException, GitAPIException {
 
 		clearPreviousRun();
 		createNewRepositoryFolder();
@@ -53,19 +53,19 @@ public class RepoCreatorTest {
 	}
 
 	@AfterEach
-	public void tearDown() {
+	void tearDown() {
 
 		git.close();
 		repository.close();
 	}
 
 	@Test
-	public void should_have_a_repository() {
+	void should_have_a_repository() {
 		assertNotNull(repository);
 	}
 
 	@Test
-	public void should_make_a_commit() throws IOException, GitAPIException {
+	void should_make_a_commit() throws IOException, GitAPIException {
 
 		commitFile();
 
@@ -73,7 +73,7 @@ public class RepoCreatorTest {
 	}
 
 	@Test
-	public void should_create_domain_object() throws IOException, GitAPIException {
+	void should_create_domain_object() throws IOException, GitAPIException {
 
 		commitFile();
 		Iterable<RevCommit> revCommits = git.log().call();
@@ -85,7 +85,7 @@ public class RepoCreatorTest {
 	}
 
 	@Test
-	public void should_tag() throws GitAPIException, IOException {
+	void should_tag() throws GitAPIException, IOException {
 
 		commitFile();
 		createTag();
