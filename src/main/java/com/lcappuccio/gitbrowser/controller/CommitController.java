@@ -20,7 +20,7 @@ import java.util.List;
 @Controller
 @RequestMapping(value = "commit")
 @EnableSwagger2WebMvc
-@Api(description = "Git Browser REST API")
+@Api
 public class CommitController {
 
 	private final GraphApi graphApi;

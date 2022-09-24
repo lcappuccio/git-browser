@@ -21,7 +21,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, GitAPIException {
 
-		Integer commits = 0;
+		int commits = 0;
 		FileRepositoryBuilder builder = new FileRepositoryBuilder();
 		// Repository repository = builder.setGitDir(new File("/Users/cappuccio/Documents/Projects/test/.git"))
 		Repository repository = builder.setGitDir(new File("./.git"))

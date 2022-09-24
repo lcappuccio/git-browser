@@ -1,5 +1,7 @@
 package com.lcappuccio.gitbrowser.model;
 
+import java.util.Objects;
+
 public class Commit implements Comparable<Commit> {
 
 	private String id;
@@ -56,9 +58,9 @@ public class Commit implements Comparable<Commit> {
 		Commit commit = (Commit) o;
 
 		if (dateTime != commit.dateTime) return false;
-		if (id != null ? !id.equals(commit.id) : commit.id != null) return false;
-		if (author != null ? !author.equals(commit.author) : commit.author != null) return false;
-		return message != null ? message.equals(commit.message) : commit.message == null;
+		if (!Objects.equals(id, commit.id)) return false;
+		if (!Objects.equals(author, commit.author)) return false;
+		return Objects.equals(message, commit.message);
 	}
 
 	@Override
