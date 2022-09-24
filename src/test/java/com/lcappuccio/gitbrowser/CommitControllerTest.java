@@ -1,9 +1,8 @@
-package com.appway.gitbrowser.test;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.Application;
-import com.appway.gitbrowser.controller.CommitController;
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.services.GraphApi;
+import com.lcappuccio.gitbrowser.controller.CommitController;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.services.GraphApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;

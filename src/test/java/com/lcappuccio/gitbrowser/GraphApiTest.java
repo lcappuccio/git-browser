@@ -1,9 +1,9 @@
-package com.appway.gitbrowser.test;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.Application;
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.pojo.DomainObjectConverter;
-import com.appway.gitbrowser.services.GraphApi;
+import com.lcappuccio.gitbrowser.Application;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.pojo.DomainObjectConverter;
+import com.lcappuccio.gitbrowser.services.GraphApi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

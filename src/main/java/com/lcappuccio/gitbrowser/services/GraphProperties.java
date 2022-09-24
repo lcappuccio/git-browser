@@ -1,4 +1,4 @@
-package com.appway.gitbrowser.services;
+package com.lcappuccio.gitbrowser.services;
 
 public enum GraphProperties {
 

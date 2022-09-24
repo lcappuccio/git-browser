@@ -1,10 +1,10 @@
-package com.appway.gitbrowser;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.pojo.DomainObjectConverter;
-import com.appway.gitbrowser.pojo.GitLogContainer;
-import com.appway.gitbrowser.services.GitApi;
-import com.appway.gitbrowser.services.GitApiImpl;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.pojo.DomainObjectConverter;
+import com.lcappuccio.gitbrowser.pojo.GitLogContainer;
+import com.lcappuccio.gitbrowser.services.GitApi;
+import com.lcappuccio.gitbrowser.services.GitApiImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;

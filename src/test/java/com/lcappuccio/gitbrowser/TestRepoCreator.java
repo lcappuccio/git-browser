@@ -1,9 +1,8 @@
-package com.appway.gitbrowser.test;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.Application;
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.model.Tag;
-import com.appway.gitbrowser.pojo.DomainObjectConverter;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.model.Tag;
+import com.lcappuccio.gitbrowser.pojo.DomainObjectConverter;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

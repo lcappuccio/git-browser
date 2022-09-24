@@ -1,6 +1,6 @@
-package com.appway.gitbrowser.services;
+package com.lcappuccio.gitbrowser.services;
 
-import com.appway.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.model.Commit;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

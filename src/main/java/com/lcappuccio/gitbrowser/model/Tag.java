@@ -1,4 +1,4 @@
-package com.appway.gitbrowser.model;
+package com.lcappuccio.gitbrowser.model;
 
 import org.eclipse.jgit.lib.Ref;
 

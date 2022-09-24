@@ -1,8 +1,8 @@
-package com.appway.gitbrowser.services;
+package com.lcappuccio.gitbrowser.services;
 
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.pojo.DomainObjectConverter;
-import com.appway.gitbrowser.pojo.GitLogContainer;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.pojo.DomainObjectConverter;
+import com.lcappuccio.gitbrowser.pojo.GitLogContainer;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.springframework.beans.factory.annotation.Autowired;
 

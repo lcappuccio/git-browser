@@ -1,4 +1,4 @@
-package com.appway.gitbrowser.pojo;
+package com.lcappuccio.gitbrowser.pojo;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

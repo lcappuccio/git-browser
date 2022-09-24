@@ -1,6 +1,6 @@
-package com.appway.gitbrowser.pojo;
+package com.lcappuccio.gitbrowser.pojo;
 
-import com.appway.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.model.Commit;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.text.SimpleDateFormat;

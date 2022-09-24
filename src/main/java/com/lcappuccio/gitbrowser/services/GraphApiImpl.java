@@ -1,6 +1,6 @@
-package com.appway.gitbrowser.services;
+package com.lcappuccio.gitbrowser.services;
 
-import com.appway.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.model.Commit;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.*;

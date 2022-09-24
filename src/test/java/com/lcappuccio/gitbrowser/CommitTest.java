@@ -1,6 +1,6 @@
-package com.appway.gitbrowser.test;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.model.Commit;
 import org.junit.Test;
 
 import java.util.UUID;

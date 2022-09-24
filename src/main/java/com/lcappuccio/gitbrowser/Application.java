@@ -1,10 +1,10 @@
-package com.appway.gitbrowser;
+package com.lcappuccio.gitbrowser;
 
-import com.appway.gitbrowser.pojo.GitLogContainer;
-import com.appway.gitbrowser.services.GitApi;
-import com.appway.gitbrowser.services.GitApiImpl;
-import com.appway.gitbrowser.services.GraphApi;
-import com.appway.gitbrowser.services.GraphApiImpl;
+import com.lcappuccio.gitbrowser.pojo.GitLogContainer;
+import com.lcappuccio.gitbrowser.services.GitApi;
+import com.lcappuccio.gitbrowser.services.GitApiImpl;
+import com.lcappuccio.gitbrowser.services.GraphApi;
+import com.lcappuccio.gitbrowser.services.GraphApiImpl;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Value;

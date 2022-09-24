@@ -1,7 +1,7 @@
-package com.appway.gitbrowser.controller;
+package com.lcappuccio.gitbrowser.controller;
 
-import com.appway.gitbrowser.model.Commit;
-import com.appway.gitbrowser.services.GraphApi;
+import com.lcappuccio.gitbrowser.model.Commit;
+import com.lcappuccio.gitbrowser.services.GraphApi;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.appway.gitbrowser.model;
+package com.lcappuccio.gitbrowser.model;
 
 public class Commit implements Comparable<Commit> {
 
