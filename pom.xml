@@ -20,7 +20,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jgit.version>6.3.0.202209071007-r</jgit.version>
-		<swagger.version>2.10.5</swagger.version>
+		<swagger.version>3.0.0</swagger.version>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<junit.jupiter.version>5.9.0</junit.jupiter.version>
