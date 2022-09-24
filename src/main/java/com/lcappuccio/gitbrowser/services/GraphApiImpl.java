@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class GraphApiImpl implements GraphApi {
 
@@ -44,12 +43,11 @@ public class GraphApiImpl implements GraphApi {
         final DatabaseManagementServiceBuilder databaseManagementServiceBuilder =
                 new DatabaseManagementServiceBuilder(databasePath);
         databaseManagementService = databaseManagementServiceBuilder.build();
-        databaseManagementService.createDatabase("GitDatabase");
-        graphDb = databaseManagementService.database("GitDatabase");
+        graphDb = databaseManagementService.database(org.neo4j.configuration.GraphDatabaseSettings.DEFAULT_DATABASE_NAME);
 
         LOGGER.info("Creating database in {}", dbFolder);
 		createIndexes();
-		createSchema();
+		//createSchema(); TODO LC not needed as of 4.x ?!?
 		initializeDatabase(gitApi.getAllCommits());
 
 	}
@@ -60,12 +58,10 @@ public class GraphApiImpl implements GraphApi {
 		List<Commit> allCommits = new ArrayList<>();
 		LOGGER.info("Find all");
 		try (Transaction transaction = graphDb.beginTx()) {
-            final ResourceIterator<Node> nodeResourceIterator = transaction.getAllNodes().iterator();
-			transaction.commit();
-			while (nodeResourceIterator.hasNext()) {
-				Node node = nodeResourceIterator.next();
-				allCommits.add(fromNode(node));
-			}
+            for (Node node : transaction.getAllNodes()) {
+                allCommits.add(fromNode(node));
+            }
+            transaction.commit();
 		}
 		return allCommits;
 	}
@@ -76,12 +72,12 @@ public class GraphApiImpl implements GraphApi {
 		LOGGER.info("Find commit id {}", commitId);
 		try (Transaction transaction = graphDb.beginTx()) {
             final ResourceIterator<Node> nodeResourceIterator = transaction.findNodes(graphCommitIdLabel,
-                    GraphProperties.COMMIT_ID.toString(), commit);
-			transaction.commit();
+                    GraphProperties.COMMIT_ID.toString(), commitId);
 			while (nodeResourceIterator.hasNext()) {
 				Node node = nodeResourceIterator.next();
 				commit = fromNode(node);
 			}
+            transaction.commit();
 		}
 		return commit;
 	}
@@ -92,16 +88,12 @@ public class GraphApiImpl implements GraphApi {
 		LOGGER.info("Find commit message {}", commitMessage);
 		try (Transaction transaction = graphDb.beginTx()) {
             final ResourceIterator<Node> nodeResourceIterator = transaction.findNodes(graphCommitMessageLabel,
-                    GraphProperties.COMMIT_MESSAGE.toString(), commitMessage);
-            transaction.commit();
+                    GraphProperties.COMMIT_MESSAGE.toString(), commitMessage, StringSearchMode.CONTAINS);
 			while (nodeResourceIterator.hasNext()) {
 				Node node = nodeResourceIterator.next();
-				String nodeCommitMessage = node.getProperty(GraphProperties.COMMIT_MESSAGE.toString()).toString();
-
-				if (nodeCommitMessage.contains(commitMessage)) {
-					commitList.add(fromNode(node));
-				}
+                commitList.add(fromNode(node));
 			}
+            transaction.commit();
 		}
 
 		Collections.sort(commitList);
@@ -146,8 +138,6 @@ public class GraphApiImpl implements GraphApi {
                     graphCommitIdLabel,
                     GraphProperties.COMMIT_ID.toString(),
                     commit.getId());
-            transaction.commit();
-
             while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
 				Relationship singleRelationship = commitNode.getSingleRelationship(parentRelation, Direction.OUTGOING);
@@ -156,6 +146,7 @@ public class GraphApiImpl implements GraphApi {
 					parentCommit = fromNode(endNode);
 				}
 			}
+            transaction.commit();
 		}
 		return parentCommit;
 	}
@@ -170,14 +161,16 @@ public class GraphApiImpl implements GraphApi {
             indexCommitId = schema
                     .indexFor(graphCommitIdLabel)
                     .on(GraphProperties.COMMIT_ID.toString())
+                    .withName(GraphProperties.COMMIT_ID.toString())
                     .create();
             indexCommitMessage = schema
                     .indexFor(graphCommitMessageLabel)
                     .on(GraphProperties.COMMIT_MESSAGE.toString())
+                    .withName(GraphProperties.COMMIT_MESSAGE.toString())
                     .create();
-			transaction.commit();
-            schema.awaitIndexOnline( indexCommitId, 10, TimeUnit.SECONDS );
-            schema.awaitIndexOnline( indexCommitMessage, 10, TimeUnit.SECONDS );
+            //schema.awaitIndexOnline( indexCommitId, 10, TimeUnit.SECONDS );
+            //schema.awaitIndexOnline( indexCommitMessage, 10, TimeUnit.SECONDS );
+            transaction.commit();
 		}
 	}
 
@@ -241,6 +234,7 @@ public class GraphApiImpl implements GraphApi {
             commitNode.setProperty(GraphProperties.COMMIT_ID.toString(), commit.getId());
             commitNode.setProperty(GraphProperties.COMMIT_MESSAGE.toString(), commit.getMessage());
             commitNode.addLabel(graphCommitIdLabel);
+            commitNode.addLabel(graphCommitMessageLabel);
             transaction.commit();
             /*
             indexCommitId.add(commitNode, GraphProperties.COMMIT_ID.toString(), commit.getId());
@@ -266,6 +260,7 @@ public class GraphApiImpl implements GraphApi {
             } else {
                 LOGGER.info("Commit {} has no parent", commit.getId());
             }
+            transaction.commit();
         }
 	}
 
