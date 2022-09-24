@@ -4,7 +4,6 @@ import com.lcappuccio.gitbrowser.model.Commit;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.*;
-import org.neo4j.graphdb.schema.IndexDefinition;
 import org.neo4j.graphdb.schema.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +28,6 @@ public class GraphApiImpl implements GraphApi {
 			RelationshipType.withName(GraphProperties.COMMIT_PARENT.toString());
 	private final Label graphCommitIdLabel = Label.label(GraphProperties.COMMIT_ID.toString());
 	private final Label graphCommitMessageLabel = Label.label(GraphProperties.COMMIT_MESSAGE.toString());
-
-    private IndexDefinition indexCommitId;
-    private IndexDefinition indexCommitMessage;
 
 	@Autowired
 	public GraphApiImpl(final String dbFolder, GitApi gitApi) {
@@ -158,13 +154,11 @@ public class GraphApiImpl implements GraphApi {
 	private void createIndexes() {
 		try (Transaction transaction = graphDb.beginTx()) {
             final Schema schema = transaction.schema();
-            indexCommitId = schema
-                    .indexFor(graphCommitIdLabel)
+            schema.indexFor(graphCommitIdLabel)
                     .on(GraphProperties.COMMIT_ID.toString())
                     .withName(GraphProperties.COMMIT_ID.toString())
                     .create();
-            indexCommitMessage = schema
-                    .indexFor(graphCommitMessageLabel)
+            schema.indexFor(graphCommitMessageLabel)
                     .on(GraphProperties.COMMIT_MESSAGE.toString())
                     .withName(GraphProperties.COMMIT_MESSAGE.toString())
                     .create();

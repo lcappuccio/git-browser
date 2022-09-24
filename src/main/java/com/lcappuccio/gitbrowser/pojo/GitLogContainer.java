@@ -28,7 +28,7 @@ public class GitLogContainer {
 				revCommitMap.put(revCommitId, revCommit);
 			}
 		}
-		LOGGER.info("Loaded repository with " + revCommitMap.size() + " commits");
+		LOGGER.info("Loaded repository with {} commits", revCommitMap.size());
 	}
 
 	public RevCommit getRevCommit(final String commitId) {
