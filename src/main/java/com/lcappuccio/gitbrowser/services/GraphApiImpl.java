@@ -173,19 +173,6 @@ public class GraphApiImpl implements GraphApi {
 	}
 
 	/**
-	 * Creates the database schema and constraints
-	 */
-	private void createSchema() {
-		try (Transaction transaction = graphDb.beginTx()) {
-            transaction.schema()
-                    .constraintFor(graphCommitIdLabel)
-                    .assertPropertyIsUnique(GraphProperties.COMMIT_ID.toString())
-                    .create();
-            transaction.commit();
-		}
-	}
-
-	/**
 	 * Transform Node object to Commit
 	 *
 	 * @param node
