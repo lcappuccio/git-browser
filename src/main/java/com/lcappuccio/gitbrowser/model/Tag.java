@@ -1,5 +1,6 @@
 package com.lcappuccio.gitbrowser.model;
 
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 
 public class Tag {
@@ -11,7 +12,10 @@ public class Tag {
 	}
 
 	public Tag(Ref reference) {
-		this.id = reference.getObjectId().toString();
+        ObjectId objectId = reference.getObjectId();
+        if (objectId!= null) {
+            this.id = objectId.toString();
+        }
 		this.name = reference.getName();
 	}
 
