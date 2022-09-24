@@ -9,31 +9,29 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
-public class TestRepoCreator {
+public class RepoCreatorTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestRepoCreator.class);
+	private static final Logger logger = LoggerFactory.getLogger(RepoCreatorTest.class);
 
 	private static final File gitTestRepository = new File("target/gittestrepository");
 	private static final File SOME_TEST_FILE = new File("target/gittestrepository/Test.txt");
@@ -45,7 +43,7 @@ public class TestRepoCreator {
 		return repository;
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() throws IOException, GitAPIException {
 
 		clearPreviousRun();
@@ -54,7 +52,7 @@ public class TestRepoCreator {
 
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 
 		git.close();
