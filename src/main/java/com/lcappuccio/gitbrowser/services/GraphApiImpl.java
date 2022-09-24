@@ -130,7 +130,7 @@ public class GraphApiImpl implements GraphApi {
 	@Override
 	public Commit findParentOf(Commit commit) {
 
-		LOGGER.info("Find parent commit of: " + commit.getId());
+		LOGGER.info("Find parent commit of {}", commit.getId());
 		Commit parentCommit = null;
 		try (Transaction transaction = graphDb.beginTx()) {
 
@@ -203,7 +203,7 @@ public class GraphApiImpl implements GraphApi {
 		}
 		transaction.commit();
 		transaction.close();
-		LOGGER.info("Created database with " + commits.size() + " commits");
+		LOGGER.info("Created database with {} commits", commits.size());
 	}
 
 	/**
