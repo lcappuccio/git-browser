@@ -126,14 +126,16 @@ public class GraphApiImpl implements GraphApi {
 	@Override
 	public Commit findParentOf(Commit commit) {
 
-		LOGGER.info("Find parent commit of {}", commit.getId());
+        final String sanitizeCommitId = commit.getId().replaceAll("[\n\r\t]", "_");
+
+		LOGGER.info("Find parent commit of {}", sanitizeCommitId);
 		Commit parentCommit = null;
 		try (Transaction transaction = graphDb.beginTx()) {
 
             final ResourceIterator<Node> nodeIterator = transaction.findNodes(
                     graphCommitIdLabel,
                     GraphProperties.COMMIT_ID.toString(),
-                    commit.getId());
+                    sanitizeCommitId);
             while (nodeIterator.hasNext()) {
 				Node commitNode = nodeIterator.next();
 				Relationship singleRelationship = commitNode.getSingleRelationship(parentRelation, Direction.OUTGOING);
