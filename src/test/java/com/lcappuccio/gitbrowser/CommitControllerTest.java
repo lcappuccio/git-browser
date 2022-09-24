@@ -1,19 +1,19 @@
 package com.lcappuccio.gitbrowser;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lcappuccio.gitbrowser.controller.CommitController;
 import com.lcappuccio.gitbrowser.model.Commit;
 import com.lcappuccio.gitbrowser.services.GraphApi;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author leo 16/09/2017 11:06
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
 public class CommitControllerTest {
@@ -37,7 +37,7 @@ public class CommitControllerTest {
 	private MockMvc sut;
 	private Commit commit1, commit2;
 
-	@Before
+	@BeforeEach
 	public void setSut() {
 		graphApi = mock(GraphApi.class);
 		commit1 = CommitTest.getRandomCommit("TestAuthor", "TestMessage1");
@@ -85,7 +85,7 @@ public class CommitControllerTest {
 
 		String jsonStringFromPerson = jsonStringFromPerson(commit1);
 
-		sut.perform(MockMvcRequestBuilders.put("/commit/findparentof").contentType(MediaType.APPLICATION_JSON)
+		sut.perform(MockMvcRequestBuilders.get("/commit/findparentof").contentType(MediaType.APPLICATION_JSON)
 				.content(jsonStringFromPerson.getBytes()))
 				.andExpect(status().is(HttpStatus.OK.value()));
 

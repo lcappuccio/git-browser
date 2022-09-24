@@ -1,62 +1,102 @@
 {
-	"variables": [],
 	"info": {
+		"_postman_id": "765767ab-c1da-4b31-8330-edcbb82de159",
 		"name": "git-browser",
-		"_postman_id": "129b31b4-46af-3fc6-bba7-c6edd9efe6c1",
-		"description": "",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23533457"
 	},
 	"item": [
 		{
 			"name": "Find All",
 			"request": {
-				"url": "http://{{ip}}:{{port}}/commit/findall",
 				"method": "GET",
 				"header": [],
-				"body": {},
-				"description": ""
+				"url": {
+					"raw": "http://{{ip}}:{{port}}/commit/findall",
+					"protocol": "http",
+					"host": [
+						"{{ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"commit",
+						"findall"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Find by id",
 			"request": {
-				"url": "http://{{ip}}:{{port}}/commit/findbyid/a2a30ba7ff037c2020fda353bc76fc78531f699d",
 				"method": "GET",
 				"header": [],
-				"body": {},
-				"description": ""
+				"url": {
+					"raw": "http://{{ip}}:{{port}}/commit/findbyid/c62b0e17dbede79ceca1d2b69399f8045692574b",
+					"protocol": "http",
+					"host": [
+						"{{ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"commit",
+						"findbyid",
+						"c62b0e17dbede79ceca1d2b69399f8045692574b"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Find by message",
 			"request": {
-				"url": "http://{{ip}}:{{port}}/commit/findbymessage/style",
 				"method": "GET",
 				"header": [],
-				"body": {},
-				"description": ""
+				"url": {
+					"raw": "http://{{ip}}:{{port}}/commit/findbymessage/init",
+					"protocol": "http",
+					"host": [
+						"{{ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"commit",
+						"findbymessage",
+						"init"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Find parent of",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"url": "http://{{ip}}:{{port}}/commit/findparentof",
-				"method": "PUT",
+				"method": "GET",
 				"header": [
 					{
 						"key": "Content-Type",
-						"value": "application/json",
-						"description": ""
+						"value": "application/json"
 					}
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"6da65881632b42a49d90dd3afc75f567fb74a058\",\n    \"dateTime\": 1501054056000,\n    \"author\": \"Leonardo Cappuccio\",\n    \"message\": \"code style\"\n}"
+					"raw": "{\n    \"id\": \"2e93bd8b06b8f51feb86eb6b5a55363e3c99fa17\",\n    \"dateTime\": 1500993131000,\n    \"author\": \"Leonardo Cappuccio\",\n    \"message\": \"add jgit dependency\"\n}"
 				},
-				"description": ""
+				"url": {
+					"raw": "http://{{ip}}:{{port}}/commit/findparentof",
+					"protocol": "http",
+					"host": [
+						"{{ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"commit",
+						"findparentof"
+					]
+				}
 			},
 			"response": []
 		}

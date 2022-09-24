@@ -1,12 +1,12 @@
 package com.lcappuccio.gitbrowser;
 
 import com.lcappuccio.gitbrowser.model.Commit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * 15/09/2017 15:07
