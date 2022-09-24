@@ -51,7 +51,7 @@ public class CommitController {
 		return new ResponseEntity<>(allCommits, HttpStatus.OK);
 	}
 
-	@PutMapping(value = "findparentof", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "findparentof", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Commit> findParentOf(@RequestBody @Validated final Commit commit) {
 
 		Commit parent = graphApi.findParentOf(commit);
