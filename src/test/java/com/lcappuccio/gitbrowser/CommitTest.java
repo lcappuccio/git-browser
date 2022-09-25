@@ -4,7 +4,9 @@ import com.lcappuccio.gitbrowser.model.Commit;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -13,9 +15,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommitTest {
 
 	@Test
-	void should_sort_by_date() throws InterruptedException {
+	void should_sort_by_date() {
 
 		Commit commit1 = getRandomCommit("TestAuthor", "TestMessage");
+        await().atMost(50, TimeUnit.MILLISECONDS);
 		Commit commit2 = getRandomCommit("TestAuthor", "TestMessage");
 
 		assertTrue(commit2.compareTo(commit1) > 0);
