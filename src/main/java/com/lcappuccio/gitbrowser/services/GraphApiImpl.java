@@ -4,6 +4,7 @@ import com.lcappuccio.gitbrowser.model.Commit;
 import org.neo4j.dbms.api.DatabaseManagementService;
 import org.neo4j.dbms.api.DatabaseManagementServiceBuilder;
 import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.schema.IndexType;
 import org.neo4j.graphdb.schema.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,10 +158,12 @@ public class GraphApiImpl implements GraphApi {
             final Schema schema = transaction.schema();
             schema.indexFor(graphCommitIdLabel)
                     .on(GraphProperties.COMMIT_ID.toString())
+                    .withIndexType(IndexType.FULLTEXT)
                     .withName(GraphProperties.COMMIT_ID.toString())
                     .create();
             schema.indexFor(graphCommitMessageLabel)
                     .on(GraphProperties.COMMIT_MESSAGE.toString())
+                    .withIndexType(IndexType.FULLTEXT)
                     .withName(GraphProperties.COMMIT_MESSAGE.toString())
                     .create();
             transaction.commit();
