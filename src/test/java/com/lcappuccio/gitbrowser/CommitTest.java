@@ -4,19 +4,21 @@ import com.lcappuccio.gitbrowser.model.Commit;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 15/09/2017 15:07
  */
-public class CommitTest {
+class CommitTest {
 
 	@Test
-	public void should_sort_by_date() throws InterruptedException {
+	void should_sort_by_date() {
 
 		Commit commit1 = getRandomCommit("TestAuthor", "TestMessage");
-		Thread.sleep(50);
+        await().atMost(50, TimeUnit.MILLISECONDS);
 		Commit commit2 = getRandomCommit("TestAuthor", "TestMessage");
 
 		assertTrue(commit2.compareTo(commit1) > 0);
@@ -25,7 +27,7 @@ public class CommitTest {
 	}
 
 	@Test
-	public void should_sort_by_id_with_same_date() {
+	void should_sort_by_id_with_same_date() {
 
 		long systemTime = System.currentTimeMillis();
 
@@ -38,7 +40,7 @@ public class CommitTest {
 	}
 
 	@Test
-	public void should_sort_be_equals_with_same_id_and_time() {
+	void should_sort_be_equals_with_same_id_and_time() {
 
 		long systemTime = System.currentTimeMillis();
 
@@ -50,7 +52,7 @@ public class CommitTest {
         assertNotEquals(commit1.hashCode(), commit2.hashCode());
 	}
 
-	public static Commit getRandomCommit(String commitAuthor, String commitMessage) {
+	static Commit getRandomCommit(String commitAuthor, String commitMessage) {
 
 		return new Commit(UUID.randomUUID().toString(), System.currentTimeMillis(), commitAuthor, commitMessage);
 	}

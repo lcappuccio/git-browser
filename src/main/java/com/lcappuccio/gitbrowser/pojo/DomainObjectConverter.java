@@ -8,6 +8,8 @@ import java.util.TimeZone;
 
 public class DomainObjectConverter {
 
+    private DomainObjectConverter() {}
+
 	/**
 	 * Convert JGit commit object to our domain
 	 *

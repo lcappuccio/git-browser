@@ -43,7 +43,6 @@ public class GraphApiImpl implements GraphApi {
 
         LOGGER.info("Creating database in {}", dbFolder);
 		createIndexes();
-		//createSchema(); TODO LC not needed as of 4.x ?!?
 		initializeDatabase(gitApi.getAllCommits());
 
 	}

@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {Application.class})
 @TestPropertySource(locations = "classpath:application.properties")
-public class CommitControllerTest {
+class CommitControllerTest {
 
 	private GraphApi graphApi;
 	private MockMvc sut;
@@ -51,7 +51,7 @@ public class CommitControllerTest {
 	}
 
 	@Test
-	public void should_find_all() throws Exception {
+	void should_find_all() throws Exception {
 
 		sut.perform(MockMvcRequestBuilders.get("/commit/findall"))
 				.andExpect(status().is(HttpStatus.OK.value()));
@@ -60,7 +60,7 @@ public class CommitControllerTest {
 	}
 
 	@Test
-	public void should_find_by_id() throws Exception {
+	void should_find_by_id() throws Exception {
 
 		String commitId = commit1.getId();
 
@@ -71,7 +71,7 @@ public class CommitControllerTest {
 	}
 
 	@Test
-	public void should_find_by_message() throws Exception {
+	void should_find_by_message() throws Exception {
 
 
 		sut.perform(MockMvcRequestBuilders.get("/commit/findbymessage/TestMessage1")).andExpect(status().is
@@ -81,7 +81,7 @@ public class CommitControllerTest {
 	}
 
 	@Test
-	public void should_find_parent_of() throws Exception {
+	void should_find_parent_of() throws Exception {
 
 		String jsonStringFromPerson = jsonStringFromPerson(commit1);
 
